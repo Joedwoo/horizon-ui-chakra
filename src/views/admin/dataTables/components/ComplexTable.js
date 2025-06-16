@@ -23,7 +23,7 @@ import {
 } from '@tanstack/react-table';
 // Custom components
 import Card from 'components/card/Card';
-import Menu from 'components/menu/MainMenu';
+import CreatePatientModal from './CreatePatientModal';
 import * as React from 'react';
 // Assets
 import { MdCancel, MdCheckCircle, MdOutlineError } from 'react-icons/md';
@@ -34,9 +34,15 @@ const columnHelper = createColumnHelper();
 export default function ComplexTable(props) {
   const { tableData } = props;
   const [sorting, setSorting] = React.useState([]);
+  const [data, setData] = React.useState(() => [...tableData]);
+  
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
-  let defaultData = tableData;
+
+  const handlePatientCreate = (newPatient) => {
+    setData(prev => [...prev, newPatient]);
+  };
+
   const columns = [
     columnHelper.accessor('name', {
       id: 'name',
@@ -47,7 +53,7 @@ export default function ComplexTable(props) {
           fontSize={{ sm: '10px', lg: '12px' }}
           color="gray.400"
         >
-          NAME
+          NOM
         </Text>
       ),
       cell: (info) => (
@@ -67,7 +73,7 @@ export default function ComplexTable(props) {
           fontSize={{ sm: '10px', lg: '12px' }}
           color="gray.400"
         >
-          STATUS
+          STATUT
         </Text>
       ),
       cell: (info) => (
@@ -96,7 +102,9 @@ export default function ComplexTable(props) {
             }
           />
           <Text color={textColor} fontSize="sm" fontWeight="700">
-            {info.getValue()}
+            {info.getValue() === 'Approved' ? 'Approuvé' : 
+             info.getValue() === 'Disable' ? 'Désactivé' : 
+             info.getValue() === 'Error' ? 'Erreur' : info.getValue()}
           </Text>
         </Flex>
       ),
@@ -128,7 +136,7 @@ export default function ComplexTable(props) {
           fontSize={{ sm: '10px', lg: '12px' }}
           color="gray.400"
         >
-          PROGRESS
+          PROGRESSION
         </Text>
       ),
       cell: (info) => (
@@ -144,7 +152,7 @@ export default function ComplexTable(props) {
       ),
     }),
   ];
-  const [data, setData] = React.useState(() => [...defaultData]);
+
   const table = useReactTable({
     data,
     columns,
@@ -156,6 +164,7 @@ export default function ComplexTable(props) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
+
   return (
     <Card
       flexDirection="column"
@@ -170,9 +179,9 @@ export default function ComplexTable(props) {
           fontWeight="700"
           lineHeight="100%"
         >
-          Complex Table
+          Gestion des Patients
         </Text>
-        <Menu />
+        <CreatePatientModal onPatientCreate={handlePatientCreate} />
       </Flex>
       <Box>
         <Table variant="simple" color="gray.500" mb="24px" mt="12px">
