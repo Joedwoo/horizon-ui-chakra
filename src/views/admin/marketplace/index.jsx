@@ -59,133 +59,128 @@ export default function Marketplace() {
   return (
     <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
       {/* Main Fields */}
-      <Grid
-        mb='20px'
-        gridTemplateColumns={{ xl: "repeat(3, 1fr)", "2xl": "1fr 0.46fr" }}
-        gap={{ base: "20px", xl: "20px" }}
-        display={{ base: "block", xl: "grid" }}>
-        <Flex
-          flexDirection='column'
-          gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}>
-          <Banner />
-          <Flex direction='column'>
-            <Flex
-              mt='45px'
-              mb='20px'
-              justifyContent='space-between'
-              direction={{ base: "column", md: "row" }}
-              align={{ base: "start", md: "center" }}>
-              <Text color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
-                Trending NFTs
-              </Text>
-            </Flex>
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap='20px' mb='20px'>
-              <NFT
-                name='Abstract Colors'
-                author='By Esthera Jackson'
-                bidders={[
-                  Avatar1,
-                  Avatar2,
-                  Avatar3,
-                  Avatar4,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                ]}
-                image={Nft1}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <NFT
-                name='ETH AI Brain'
-                author='By Nick Wilson'
-                bidders={[
-                  Avatar1,
-                  Avatar2,
-                  Avatar3,
-                  Avatar4,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                ]}
-                image={Nft2}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <NFT
-                name='Mesh Gradients '
-                author='By Will Smith'
-                bidders={[
-                  Avatar1,
-                  Avatar2,
-                  Avatar3,
-                  Avatar4,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                ]}
-                image={Nft3}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <NFT
-                name='Swipe Circles'
-                author='By Peter Will'
-                bidders={[
-                  Avatar1,
-                  Avatar2,
-                  Avatar3,
-                  Avatar4,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                ]}
-                image={Nft4}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <NFT
-                name='Colorful Heaven'
-                author='By Mark Benjamin'
-                bidders={[
-                  Avatar1,
-                  Avatar2,
-                  Avatar3,
-                  Avatar4,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                ]}
-                image={Nft5}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <NFT
-                name='3D Cubes Art'
-                author='By Manny Gates'
-                bidders={[
-                  Avatar1,
-                  Avatar2,
-                  Avatar3,
-                  Avatar4,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                  Avatar1,
-                ]}
-                image={Nft6}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-            </SimpleGrid>
+      <Flex
+        direction='column'
+        w='100%'
+        mb='20px'>
+        <Banner />
+        <Flex direction='column'>
+          <Flex
+            mt='45px'
+            mb='20px'
+            justifyContent='space-between'
+            direction={{ base: "column", md: "row" }}
+            align={{ base: "start", md: "center" }}>
+            <Text color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
+              Trending NFTs
+            </Text>
           </Flex>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap='20px' mb='20px'>
+            <NFT
+              name='Abstract Colors'
+              author='By Esthera Jackson'
+              bidders={[
+                Avatar1,
+                Avatar2,
+                Avatar3,
+                Avatar4,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+              ]}
+              image={Nft1}
+              currentbid='0.91 ETH'
+              download='#'
+            />
+            <NFT
+              name='ETH AI Brain'
+              author='By Nick Wilson'
+              bidders={[
+                Avatar1,
+                Avatar2,
+                Avatar3,
+                Avatar4,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+              ]}
+              image={Nft2}
+              currentbid='0.91 ETH'
+              download='#'
+            />
+            <NFT
+              name='Mesh Gradients '
+              author='By Will Smith'
+              bidders={[
+                Avatar1,
+                Avatar2,
+                Avatar3,
+                Avatar4,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+              ]}
+              image={Nft3}
+              currentbid='0.91 ETH'
+              download='#'
+            />
+            <NFT
+              name='Swipe Circles'
+              author='By Peter Will'
+              bidders={[
+                Avatar1,
+                Avatar2,
+                Avatar3,
+                Avatar4,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+              ]}
+              image={Nft4}
+              currentbid='0.91 ETH'
+              download='#'
+            />
+            <NFT
+              name='Colorful Heaven'
+              author='By Mark Benjamin'
+              bidders={[
+                Avatar1,
+                Avatar2,
+                Avatar3,
+                Avatar4,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+              ]}
+              image={Nft5}
+              currentbid='0.91 ETH'
+              download='#'
+            />
+            <NFT
+              name='3D Cubes Art'
+              author='By Manny Gates'
+              bidders={[
+                Avatar1,
+                Avatar2,
+                Avatar3,
+                Avatar4,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+                Avatar1,
+              ]}
+              image={Nft6}
+              currentbid='0.91 ETH'
+              download='#'
+            />
+          </SimpleGrid>
         </Flex>
-      </Grid>
+      </Flex>
       {/* Delete Product */}
     </Box>
   );
