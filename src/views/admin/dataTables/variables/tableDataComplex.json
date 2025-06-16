@@ -1,26 +1,32 @@
 [
   {
-    "name":"Dr. Martin Dubois",
-    "status": "Approved",
-    "date": "18 Apr 2022",
-    "progress": 75.5  
+    "firstName": "Jean",
+    "lastName": "Dupont",
+    "birthDate": "15/03/1985",
+    "createdDate": "18/04/2022"
   },
   {
-    "name":"Dr. Sophie Laurent",
-    "status": "Disable",
-    "date": "18 Apr 2022",
-    "progress": 25.5  
+    "firstName": "Marie",
+    "lastName": "Martin",
+    "birthDate": "22/07/1990",
+    "createdDate": "20/04/2022"
   },
   {
-    "name":"Dr. Pierre Moreau",
-    "status": "Error",
-    "date": "20 May 2021",
-    "progress": 90  
+    "firstName": "Pierre",
+    "lastName": "Durand",
+    "birthDate": "08/12/1978",
+    "createdDate": "25/04/2022"
   },
   {
-    "name":"Dr. Marie Leroy",
-    "status": "Approved",
-    "date": "12 Jul 2021",
-    "progress": 50.5  
+    "firstName": "Sophie",
+    "lastName": "Leroy",
+    "birthDate": "14/09/1992",
+    "createdDate": "28/04/2022"
+  },
+  {
+    "firstName": "Antoine",
+    "lastName": "Moreau",
+    "birthDate": "03/06/1987",
+    "createdDate": "02/05/2022"
   }
 ]

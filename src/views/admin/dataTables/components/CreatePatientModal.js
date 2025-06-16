@@ -8,7 +8,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Select,
   VStack,
   HStack,
   Text,
@@ -20,10 +19,9 @@ import CardHorizon from "components/card/CardHorizon";
 const CreatePatientModal = ({ onPatientCreate }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formData, setFormData] = React.useState({
-    name: "",
-    status: "Approved",
-    date: "",
-    progress: 0,
+    firstName: "",
+    lastName: "",
+    birthDate: "",
   });
 
   const textColor = useColorModeValue("secondaryGray.900", "white");
@@ -38,19 +36,18 @@ const CreatePatientModal = ({ onPatientCreate }) => {
   };
 
   const handleSubmit = () => {
-    if (formData.name && formData.date) {
+    if (formData.firstName && formData.lastName && formData.birthDate) {
       const newPatient = {
-        name: formData.name,
-        status: formData.status,
-        date: formData.date,
-        progress: parseInt(formData.progress)
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        birthDate: formData.birthDate,
+        createdDate: new Date().toLocaleDateString('fr-FR')
       };
       onPatientCreate(newPatient);
       setFormData({
-        name: "",
-        status: "Approved",
-        date: "",
-        progress: 0,
+        firstName: "",
+        lastName: "",
+        birthDate: "",
       });
       onClose();
     }
@@ -91,61 +88,49 @@ const CreatePatientModal = ({ onPatientCreate }) => {
               <VStack spacing="20px" align="stretch">
                 <FormControl>
                   <FormLabel color={textColor} fontSize="sm" fontWeight="500">
-                    Nom du patient
+                    Prénom <Text as="span" color="red.500">*</Text>
                   </FormLabel>
                   <Input
-                    name="name"
-                    value={formData.name}
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="Entrez le nom du patient"
+                    placeholder="Entrez le prénom"
                     variant="auth"
+                    isRequired
                   />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel color={textColor} fontSize="sm" fontWeight="500">
-                    Statut
+                    Nom <Text as="span" color="red.500">*</Text>
                   </FormLabel>
-                  <Select
-                    name="status"
-                    value={formData.status}
+                  <Input
+                    name="lastName"
+                    value={formData.lastName}
                     onChange={handleInputChange}
+                    placeholder="Entrez le nom de famille"
                     variant="auth"
-                  >
-                    <option value="Approved">Approuvé</option>
-                    <option value="Disable">Désactivé</option>
-                    <option value="Error">Erreur</option>
-                  </Select>
+                    isRequired
+                  />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel color={textColor} fontSize="sm" fontWeight="500">
-                    Date
+                    Date de naissance <Text as="span" color="red.500">*</Text>
                   </FormLabel>
                   <Input
-                    name="date"
+                    name="birthDate"
                     type="date"
-                    value={formData.date}
+                    value={formData.birthDate}
                     onChange={handleInputChange}
                     variant="auth"
+                    isRequired
                   />
                 </FormControl>
 
-                <FormControl>
-                  <FormLabel color={textColor} fontSize="sm" fontWeight="500">
-                    Progression (%)
-                  </FormLabel>
-                  <Input
-                    name="progress"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formData.progress}
-                    onChange={handleInputChange}
-                    placeholder="0-100"
-                    variant="auth"
-                  />
-                </FormControl>
+                <Text fontSize="sm" color="gray.500" fontStyle="italic">
+                  La date de création sera automatiquement ajoutée lors de la création du patient.
+                </Text>
               </VStack>
 
               <HStack spacing="2" mt="30px">
@@ -175,6 +160,7 @@ const CreatePatientModal = ({ onPatientCreate }) => {
                   py="3"
                   fontSize="base"
                   fontWeight="medium"
+                  isDisabled={!formData.firstName || !formData.lastName || !formData.birthDate}
                 >
                   Créer le patient
                 </Button>

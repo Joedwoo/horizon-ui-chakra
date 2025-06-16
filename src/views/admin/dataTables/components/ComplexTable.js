@@ -3,8 +3,6 @@
 import {
   Box,
   Flex,
-  Icon,
-  Progress,
   Table,
   Tbody,
   Td,
@@ -25,8 +23,6 @@ import {
 import Card from 'components/card/Card';
 import CreatePatientModal from './CreatePatientModal';
 import * as React from 'react';
-// Assets
-import { MdCancel, MdCheckCircle, MdOutlineError } from 'react-icons/md';
 
 const columnHelper = createColumnHelper();
 
@@ -44,8 +40,28 @@ export default function ComplexTable(props) {
   };
 
   const columns = [
-    columnHelper.accessor('name', {
-      id: 'name',
+    columnHelper.accessor('firstName', {
+      id: 'firstName',
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: '10px', lg: '12px' }}
+          color="gray.400"
+        >
+          PRÉNOM
+        </Text>
+      ),
+      cell: (info) => (
+        <Flex align="center">
+          <Text color={textColor} fontSize="sm" fontWeight="700">
+            {info.getValue()}
+          </Text>
+        </Flex>
+      ),
+    }),
+    columnHelper.accessor('lastName', {
+      id: 'lastName',
       header: () => (
         <Text
           justifyContent="space-between"
@@ -64,8 +80,8 @@ export default function ComplexTable(props) {
         </Flex>
       ),
     }),
-    columnHelper.accessor('status', {
-      id: 'status',
+    columnHelper.accessor('birthDate', {
+      id: 'birthDate',
       header: () => (
         <Text
           justifyContent="space-between"
@@ -73,52 +89,7 @@ export default function ComplexTable(props) {
           fontSize={{ sm: '10px', lg: '12px' }}
           color="gray.400"
         >
-          STATUT
-        </Text>
-      ),
-      cell: (info) => (
-        <Flex align="center">
-          <Icon
-            w="24px"
-            h="24px"
-            me="5px"
-            color={
-              info.getValue() === 'Approved'
-                ? 'green.500'
-                : info.getValue() === 'Disable'
-                ? 'red.500'
-                : info.getValue() === 'Error'
-                ? 'orange.500'
-                : null
-            }
-            as={
-              info.getValue() === 'Approved'
-                ? MdCheckCircle
-                : info.getValue() === 'Disable'
-                ? MdCancel
-                : info.getValue() === 'Error'
-                ? MdOutlineError
-                : null
-            }
-          />
-          <Text color={textColor} fontSize="sm" fontWeight="700">
-            {info.getValue() === 'Approved' ? 'Approuvé' : 
-             info.getValue() === 'Disable' ? 'Désactivé' : 
-             info.getValue() === 'Error' ? 'Erreur' : info.getValue()}
-          </Text>
-        </Flex>
-      ),
-    }),
-    columnHelper.accessor('date', {
-      id: 'date',
-      header: () => (
-        <Text
-          justifyContent="space-between"
-          align="center"
-          fontSize={{ sm: '10px', lg: '12px' }}
-          color="gray.400"
-        >
-          DATE
+          DATE DE NAISSANCE
         </Text>
       ),
       cell: (info) => (
@@ -127,8 +98,8 @@ export default function ComplexTable(props) {
         </Text>
       ),
     }),
-    columnHelper.accessor('progress', {
-      id: 'progress',
+    columnHelper.accessor('createdDate', {
+      id: 'createdDate',
       header: () => (
         <Text
           justifyContent="space-between"
@@ -136,19 +107,13 @@ export default function ComplexTable(props) {
           fontSize={{ sm: '10px', lg: '12px' }}
           color="gray.400"
         >
-          PROGRESSION
+          DATE DE CRÉATION
         </Text>
       ),
       cell: (info) => (
-        <Flex align="center">
-          <Progress
-            variant="table"
-            colorScheme="brandScheme"
-            h="8px"
-            w="108px"
-            value={info.getValue()}
-          />
-        </Flex>
+        <Text color={textColor} fontSize="sm" fontWeight="700">
+          {info.getValue()}
+        </Text>
       ),
     }),
   ];
