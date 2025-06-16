@@ -24,7 +24,7 @@ export default function Main() {
             <AdminLayout theme={currentTheme} setTheme={setCurrentTheme} />
           }
         />
-        <Route path="/" element={<Navigate to="/admin/nft-marketplace" replace />} />
+        <Route path="/" element={<Navigate to="/admin/data-tables" replace />} />
       </Routes>
     </ChakraProvider>
   );

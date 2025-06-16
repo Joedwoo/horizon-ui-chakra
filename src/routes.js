@@ -18,6 +18,13 @@ import SignInCentered from 'views/auth/signIn';
 
 const routes = [
   {
+    name: 'Patients',
+    layout: '/admin',
+    icon: <Icon as={MdBarChart} width="20px" height="20px" color="inherit" />,
+    path: '/data-tables',
+    component: <DataTables />,
+  },
+  {
     name: 'NFT Marketplace',
     layout: '/admin',
     path: '/nft-marketplace',
@@ -31,13 +38,6 @@ const routes = [
     ),
     component: <NFTMarketplace />,
     secondary: true,
-  },
-  {
-    name: 'Data Tables',
-    layout: '/admin',
-    icon: <Icon as={MdBarChart} width="20px" height="20px" color="inherit" />,
-    path: '/data-tables',
-    component: <DataTables />,
   },
   {
     name: 'Profile',
