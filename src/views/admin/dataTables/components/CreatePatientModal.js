@@ -12,12 +12,18 @@ import {
   HStack,
   Text,
   useColorModeValue,
+  Icon,
+  Flex,
+  Box,
+  useToast,
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
 import CardHorizon from "components/card/CardHorizon";
+import { MdAdd, MdPerson } from "react-icons/md";
 
 const CreatePatientModal = ({ onPatientCreate }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const [formData, setFormData] = React.useState({
     firstName: "",
     lastName: "",
@@ -26,6 +32,8 @@ const CreatePatientModal = ({ onPatientCreate }) => {
 
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const brandColor = useColorModeValue("brand.500", "brand.400");
+  const bgColor = useColorModeValue("white", "navy.800");
+  const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,17 +48,48 @@ const CreatePatientModal = ({ onPatientCreate }) => {
       const newPatient = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        birthDate: formData.birthDate,
+        birthDate: new Date(formData.birthDate).toLocaleDateString('fr-FR'),
         createdDate: new Date().toLocaleDateString('fr-FR')
       };
+      
       onPatientCreate(newPatient);
+      
+      // Afficher un toast de succès
+      toast({
+        title: "Patient créé avec succès",
+        description: `${formData.firstName} ${formData.lastName} a été ajouté à la liste des patients.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      
+      // Réinitialiser le formulaire
       setFormData({
         firstName: "",
         lastName: "",
         birthDate: "",
       });
       onClose();
+    } else {
+      toast({
+        title: "Erreur de validation",
+        description: "Veuillez remplir tous les champs obligatoires.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
     }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      birthDate: "",
+    });
+    onClose();
   };
 
   return (
@@ -59,63 +98,134 @@ const CreatePatientModal = ({ onPatientCreate }) => {
         onClick={onOpen}
         bg={brandColor}
         color="white"
-        _hover={{ bg: "brand.600" }}
-        _active={{ bg: "brand.700" }}
+        _hover={{ bg: "brand.600", transform: "translateY(-2px)" }}
+        _active={{ bg: "brand.700", transform: "translateY(0px)" }}
         borderRadius="xl"
-        px="5"
+        px="6"
         py="3"
-        fontSize="base"
-        fontWeight="medium"
+        fontSize="sm"
+        fontWeight="600"
         transition="all 0.2s"
+        leftIcon={<Icon as={MdAdd} w="18px" h="18px" />}
+        boxShadow="0 4px 12px rgba(67, 24, 255, 0.15)"
       >
-        Créer un patient
+        Nouveau Patient
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="md">
-        <ModalOverlay bg="blackAlpha.300" />
-        <ModalContent mx="auto" my="auto" maxW="450px">
+      <Modal isOpen={isOpen} onClose={handleClose} size="lg" isCentered>
+        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
+        <ModalContent 
+          mx="auto" 
+          my="auto" 
+          maxW="500px"
+          bg={bgColor}
+          borderRadius="2xl"
+          boxShadow="0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+          border="1px solid"
+          borderColor={borderColor}
+        >
           <ModalBody p="0">
-            <CardHorizon extra="px-[30px] pt-[35px] pb-[40px] max-w-[450px] flex flex-col">
-              <Text
-                color={textColor}
-                fontSize="2xl"
-                fontWeight="bold"
-                mb="20px"
-              >
-                Créer un nouveau patient
-              </Text>
+            <Box p="8">
+              {/* Header avec icône */}
+              <Flex align="center" mb="6">
+                <Flex
+                  align="center"
+                  justify="center"
+                  w="12"
+                  h="12"
+                  bg={`${brandColor}15`}
+                  borderRadius="xl"
+                  me="4"
+                >
+                  <Icon as={MdPerson} w="6" h="6" color={brandColor} />
+                </Flex>
+                <Box>
+                  <Text
+                    color={textColor}
+                    fontSize="xl"
+                    fontWeight="700"
+                    lineHeight="1.2"
+                  >
+                    Nouveau Patient
+                  </Text>
+                  <Text
+                    color="gray.500"
+                    fontSize="sm"
+                    mt="1"
+                  >
+                    Ajoutez un nouveau patient à votre base de données
+                  </Text>
+                </Box>
+              </Flex>
               
-              <VStack spacing="20px" align="stretch">
-                <FormControl>
-                  <FormLabel color={textColor} fontSize="sm" fontWeight="500">
-                    Prénom <Text as="span" color="red.500">*</Text>
-                  </FormLabel>
-                  <Input
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="Entrez le prénom"
-                    variant="auth"
-                    isRequired
-                  />
-                </FormControl>
+              <VStack spacing="5" align="stretch">
+                <HStack spacing="4">
+                  <FormControl>
+                    <FormLabel 
+                      color={textColor} 
+                      fontSize="sm" 
+                      fontWeight="600"
+                      mb="2"
+                    >
+                      Prénom <Text as="span" color="red.500">*</Text>
+                    </FormLabel>
+                    <Input
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="Ex: Jean"
+                      variant="filled"
+                      bg={useColorModeValue('gray.50', 'whiteAlpha.50')}
+                      border="1px solid"
+                      borderColor="transparent"
+                      _hover={{ borderColor: brandColor }}
+                      _focus={{ 
+                        borderColor: brandColor,
+                        bg: useColorModeValue('white', 'whiteAlpha.100'),
+                        boxShadow: `0 0 0 1px ${brandColor}`
+                      }}
+                      isRequired
+                      size="lg"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel 
+                      color={textColor} 
+                      fontSize="sm" 
+                      fontWeight="600"
+                      mb="2"
+                    >
+                      Nom <Text as="span" color="red.500">*</Text>
+                    </FormLabel>
+                    <Input
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Ex: Dupont"
+                      variant="filled"
+                      bg={useColorModeValue('gray.50', 'whiteAlpha.50')}
+                      border="1px solid"
+                      borderColor="transparent"
+                      _hover={{ borderColor: brandColor }}
+                      _focus={{ 
+                        borderColor: brandColor,
+                        bg: useColorModeValue('white', 'whiteAlpha.100'),
+                        boxShadow: `0 0 0 1px ${brandColor}`
+                      }}
+                      isRequired
+                      size="lg"
+                    />
+                  </FormControl>
+                </HStack>
 
                 <FormControl>
-                  <FormLabel color={textColor} fontSize="sm" fontWeight="500">
-                    Nom <Text as="span" color="red.500">*</Text>
-                  </FormLabel>
-                  <Input
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Entrez le nom de famille"
-                    variant="auth"
-                    isRequired
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel color={textColor} fontSize="sm" fontWeight="500">
+                  <FormLabel 
+                    color={textColor} 
+                    fontSize="sm" 
+                    fontWeight="600"
+                    mb="2"
+                  >
                     Date de naissance <Text as="span" color="red.500">*</Text>
                   </FormLabel>
                   <Input
@@ -123,49 +233,69 @@ const CreatePatientModal = ({ onPatientCreate }) => {
                     type="date"
                     value={formData.birthDate}
                     onChange={handleInputChange}
-                    variant="auth"
+                    variant="filled"
+                    bg={useColorModeValue('gray.50', 'whiteAlpha.50')}
+                    border="1px solid"
+                    borderColor="transparent"
+                    _hover={{ borderColor: brandColor }}
+                    _focus={{ 
+                      borderColor: brandColor,
+                      bg: useColorModeValue('white', 'whiteAlpha.100'),
+                      boxShadow: `0 0 0 1px ${brandColor}`
+                    }}
                     isRequired
+                    size="lg"
                   />
                 </FormControl>
 
-                <Text fontSize="sm" color="gray.500" fontStyle="italic">
-                  La date de création sera automatiquement ajoutée lors de la création du patient.
-                </Text>
+                <Box 
+                  bg={useColorModeValue('blue.50', 'blue.900')} 
+                  p="4" 
+                  borderRadius="lg"
+                  border="1px solid"
+                  borderColor={useColorModeValue('blue.200', 'blue.700')}
+                >
+                  <Text fontSize="sm" color={useColorModeValue('blue.700', 'blue.200')} fontWeight="500">
+                    💡 Information
+                  </Text>
+                  <Text fontSize="sm" color={useColorModeValue('blue.600', 'blue.300')} mt="1">
+                    La date de création sera automatiquement ajoutée lors de la création du patient.
+                  </Text>
+                </Box>
               </VStack>
 
-              <HStack spacing="2" mt="30px">
+              <HStack spacing="3" mt="8" justify="flex-end">
                 <Button
-                  onClick={onClose}
-                  variant="outline"
-                  borderColor="red.500"
-                  color="red.500"
-                  _hover={{ bg: "red.50" }}
-                  _active={{ bg: "red.100" }}
-                  borderRadius="xl"
-                  px="5"
-                  py="3"
-                  fontSize="base"
-                  fontWeight="medium"
+                  onClick={handleClose}
+                  variant="ghost"
+                  color="gray.500"
+                  _hover={{ bg: "gray.100", color: "gray.700" }}
+                  borderRadius="lg"
+                  px="6"
+                  py="2"
+                  fontSize="sm"
+                  fontWeight="600"
                 >
                   Annuler
                 </Button>
                 <Button
                   onClick={handleSubmit}
-                  bg="gray.100"
-                  color="navy.700"
-                  _hover={{ bg: "gray.200" }}
-                  _active={{ bg: "gray.300" }}
-                  borderRadius="xl"
-                  px="5"
-                  py="3"
-                  fontSize="base"
-                  fontWeight="medium"
+                  bg={brandColor}
+                  color="white"
+                  _hover={{ bg: "brand.600" }}
+                  _active={{ bg: "brand.700" }}
+                  borderRadius="lg"
+                  px="6"
+                  py="2"
+                  fontSize="sm"
+                  fontWeight="600"
                   isDisabled={!formData.firstName || !formData.lastName || !formData.birthDate}
+                  boxShadow="0 4px 12px rgba(67, 24, 255, 0.15)"
                 >
                   Créer le patient
                 </Button>
               </HStack>
-            </CardHorizon>
+            </Box>
           </ModalBody>
         </ModalContent>
       </Modal>
