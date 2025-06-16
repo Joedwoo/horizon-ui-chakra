@@ -98,7 +98,7 @@ export default function ComplexTable(props) {
         const fullName = `${firstName} ${lastName}`;
         
         return (
-          <Flex align="center" py="2">
+          <Flex align="center" py="2" justify="flex-start">
             <Avatar
               size="sm"
               name={fullName}
@@ -135,8 +135,8 @@ export default function ComplexTable(props) {
         </Text>
       ),
       cell: (info) => (
-        <Box>
-          <Text color={textColor} fontSize="sm" fontWeight="600">
+        <Flex direction="column" align="center" justify="center">
+          <Text color={textColor} fontSize="sm" fontWeight="600" mb="1">
             {info.getValue()}
           </Text>
           <Badge
@@ -153,7 +153,7 @@ export default function ComplexTable(props) {
               return `${age} ans`;
             })()}
           </Badge>
-        </Box>
+        </Flex>
       ),
     }),
     columnHelper.accessor('createdDate', {
@@ -181,8 +181,8 @@ export default function ComplexTable(props) {
         };
 
         return (
-          <Box>
-            <Text color={textColor} fontSize="sm" fontWeight="600">
+          <Flex direction="column" align="center" justify="center">
+            <Text color={textColor} fontSize="sm" fontWeight="600" mb="1">
               {info.getValue()}
             </Text>
             {isRecent() && (
@@ -196,7 +196,7 @@ export default function ComplexTable(props) {
                 Nouveau
               </Badge>
             )}
-          </Box>
+          </Flex>
         );
       },
     }),
@@ -216,40 +216,42 @@ export default function ComplexTable(props) {
         </Text>
       ),
       cell: (info) => (
-        <HStack spacing="3">
-          <Tooltip label="Éditer le patient" hasArrow>
-            <IconButton
-              aria-label="Éditer"
-              icon={<MdOutlineEdit size="22px" />}
-              size="md"
-              variant="ghost"
-              colorScheme="blue"
-              onClick={() => handleEdit(info.row.original)}
-              _hover={{ bg: 'blue.50', transform: 'scale(1.05)' }}
-              _active={{ transform: 'scale(0.95)' }}
-              borderRadius="10px"
-              transition="all 0.2s"
-              w="40px"
-              h="40px"
-            />
-          </Tooltip>
-          <Tooltip label="Supprimer le patient" hasArrow>
-            <IconButton
-              aria-label="Supprimer"
-              icon={<MdOutlineDelete size="22px" />}
-              size="md"
-              variant="ghost"
-              colorScheme="red"
-              onClick={() => handleDelete(info.row.index)}
-              _hover={{ bg: 'red.50', transform: 'scale(1.05)' }}
-              _active={{ transform: 'scale(0.95)' }}
-              borderRadius="10px"
-              transition="all 0.2s"
-              w="40px"
-              h="40px"
-            />
-          </Tooltip>
-        </HStack>
+        <Flex justify="center" align="center">
+          <HStack spacing="3">
+            <Tooltip label="Éditer le patient" hasArrow>
+              <IconButton
+                aria-label="Éditer"
+                icon={<MdOutlineEdit size="22px" />}
+                size="md"
+                variant="ghost"
+                colorScheme="blue"
+                onClick={() => handleEdit(info.row.original)}
+                _hover={{ bg: 'blue.50', transform: 'scale(1.05)' }}
+                _active={{ transform: 'scale(0.95)' }}
+                borderRadius="10px"
+                transition="all 0.2s"
+                w="40px"
+                h="40px"
+              />
+            </Tooltip>
+            <Tooltip label="Supprimer le patient" hasArrow>
+              <IconButton
+                aria-label="Supprimer"
+                icon={<MdOutlineDelete size="22px" />}
+                size="md"
+                variant="ghost"
+                colorScheme="red"
+                onClick={() => handleDelete(info.row.index)}
+                _hover={{ bg: 'red.50', transform: 'scale(1.05)' }}
+                _active={{ transform: 'scale(0.95)' }}
+                borderRadius="10px"
+                transition="all 0.2s"
+                w="40px"
+                h="40px"
+              />
+            </Tooltip>
+          </HStack>
+        </Flex>
       ),
     }),
   ];
@@ -318,16 +320,17 @@ export default function ComplexTable(props) {
                     <Th
                       key={header.id}
                       colSpan={header.colSpan}
-                      pe="10px"
+                      px="20px"
                       borderColor={borderColor}
                       cursor={header.column.getCanSort() ? "pointer" : "default"}
                       onClick={header.column.getToggleSortingHandler()}
                       _hover={header.column.getCanSort() ? { bg: hoverBg } : {}}
                       transition="all 0.2s"
                       py="20px"
+                      textAlign="center"
                     >
                       <Flex
-                        justifyContent="space-between"
+                        justifyContent="center"
                         align="center"
                         fontSize={{ sm: '10px', lg: '12px' }}
                         color="gray.400"
@@ -365,6 +368,8 @@ export default function ComplexTable(props) {
                         minW={{ sm: '150px', md: '200px', lg: 'auto' }}
                         borderColor="transparent"
                         py="20px"
+                        px="20px"
+                        textAlign={cell.column.id === 'patient' ? 'left' : 'center'}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
