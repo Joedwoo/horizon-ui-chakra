@@ -34,7 +34,7 @@ import {
 import Card from 'components/card/Card';
 import CreatePatientModal from './CreatePatientModal';
 import * as React from 'react';
-// Assets - Utilisation des icônes conformes à l'app
+// Assets - Utilisation des icônes conformes à l'app avec tailles plus grandes
 import { MdOutlineEdit, MdOutlineDelete, MdSearch, MdSort } from 'react-icons/md';
 
 const columnHelper = createColumnHelper();
@@ -220,29 +220,37 @@ export default function ComplexTable(props) {
         </Text>
       ),
       cell: (info) => (
-        <HStack spacing="2">
+        <HStack spacing="3">
           <Tooltip label="Éditer le patient" hasArrow>
             <IconButton
               aria-label="Éditer"
-              icon={<MdOutlineEdit />}
-              size="sm"
+              icon={<MdOutlineEdit size="22px" />}
+              size="md"
               variant="ghost"
               colorScheme="blue"
               onClick={() => handleEdit(info.row.original)}
-              _hover={{ bg: 'blue.50' }}
-              borderRadius="8px"
+              _hover={{ bg: 'blue.50', transform: 'scale(1.05)' }}
+              _active={{ transform: 'scale(0.95)' }}
+              borderRadius="10px"
+              transition="all 0.2s"
+              w="40px"
+              h="40px"
             />
           </Tooltip>
           <Tooltip label="Supprimer le patient" hasArrow>
             <IconButton
               aria-label="Supprimer"
-              icon={<MdOutlineDelete />}
-              size="sm"
+              icon={<MdOutlineDelete size="22px" />}
+              size="md"
               variant="ghost"
               colorScheme="red"
               onClick={() => handleDelete(info.row.index)}
-              _hover={{ bg: 'red.50' }}
-              borderRadius="8px"
+              _hover={{ bg: 'red.50', transform: 'scale(1.05)' }}
+              _active={{ transform: 'scale(0.95)' }}
+              borderRadius="10px"
+              transition="all 0.2s"
+              w="40px"
+              h="40px"
             />
           </Tooltip>
         </HStack>
@@ -296,7 +304,7 @@ export default function ComplexTable(props) {
       <Flex px="25px" py="15px" gap="4" align="center" borderBottom="1px solid" borderColor={borderColor}>
         <InputGroup maxW="300px">
           <InputLeftElement pointerEvents="none">
-            <MdSearch color="gray.400" />
+            <MdSearch size="20px" color="gray.400" />
           </InputLeftElement>
           <Input
             placeholder="Rechercher un patient..."
@@ -319,7 +327,7 @@ export default function ComplexTable(props) {
         </Select>
 
         <Button
-          leftIcon={<MdSort />}
+          leftIcon={<MdSort size="18px" />}
           variant="ghost"
           size="sm"
           onClick={() => setSorting([])}

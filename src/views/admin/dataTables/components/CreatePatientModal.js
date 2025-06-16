@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
 import CardHorizon from "components/card/CardHorizon";
-// Utilisation des icônes conformes à l'app Horizon UI
+// Utilisation des icônes conformes à l'app Horizon UI avec tailles plus grandes
 import { MdAdd, MdPerson } from "react-icons/md";
 
 const CreatePatientModal = ({ onPatientCreate }) => {
@@ -107,7 +107,7 @@ const CreatePatientModal = ({ onPatientCreate }) => {
         fontSize="sm"
         fontWeight="600"
         transition="all 0.2s"
-        leftIcon={<Icon as={MdAdd} w="18px" h="18px" />}
+        leftIcon={<Icon as={MdAdd} w="20px" h="20px" />}
         boxShadow="0 4px 12px rgba(67, 24, 255, 0.15)"
       >
         Nouveau Patient
@@ -132,13 +132,13 @@ const CreatePatientModal = ({ onPatientCreate }) => {
                 <Flex
                   align="center"
                   justify="center"
-                  w="12"
-                  h="12"
+                  w="14"
+                  h="14"
                   bg={`${brandColor}15`}
                   borderRadius="xl"
                   me="4"
                 >
-                  <Icon as={MdPerson} w="6" h="6" color={brandColor} />
+                  <Icon as={MdPerson} w="8" h="8" color={brandColor} />
                 </Flex>
                 <Box>
                   <Text
