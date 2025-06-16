@@ -34,8 +34,8 @@ import {
 import Card from 'components/card/Card';
 import CreatePatientModal from './CreatePatientModal';
 import * as React from 'react';
-// Assets
-import { MdEdit, MdDelete, MdSearch, MdSort } from 'react-icons/md';
+// Assets - Utilisation des icônes conformes à l'app
+import { MdOutlineEdit, MdOutlineDelete, MdSearch, MdSort } from 'react-icons/md';
 
 const columnHelper = createColumnHelper();
 
@@ -224,23 +224,25 @@ export default function ComplexTable(props) {
           <Tooltip label="Éditer le patient" hasArrow>
             <IconButton
               aria-label="Éditer"
-              icon={<MdEdit />}
+              icon={<MdOutlineEdit />}
               size="sm"
               variant="ghost"
               colorScheme="blue"
               onClick={() => handleEdit(info.row.original)}
               _hover={{ bg: 'blue.50' }}
+              borderRadius="8px"
             />
           </Tooltip>
           <Tooltip label="Supprimer le patient" hasArrow>
             <IconButton
               aria-label="Supprimer"
-              icon={<MdDelete />}
+              icon={<MdOutlineDelete />}
               size="sm"
               variant="ghost"
               colorScheme="red"
               onClick={() => handleDelete(info.row.index)}
               _hover={{ bg: 'red.50' }}
+              borderRadius="8px"
             />
           </Tooltip>
         </HStack>

@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
 import CardHorizon from "components/card/CardHorizon";
+// Utilisation des icônes conformes à l'app Horizon UI
 import { MdAdd, MdPerson } from "react-icons/md";
 
 const CreatePatientModal = ({ onPatientCreate }) => {
