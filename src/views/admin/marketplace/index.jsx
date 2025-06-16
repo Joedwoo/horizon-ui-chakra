@@ -79,7 +79,7 @@ export default function Marketplace() {
                 Trending NFTs
               </Text>
             </Flex>
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap='20px'>
+            <SimpleGrid columns={{ base: 1, md: 3 }} gap='20px' mb='20px'>
               <NFT
                 name='Abstract Colors'
                 author='By Esthera Jackson'
@@ -131,20 +131,6 @@ export default function Marketplace() {
                 currentbid='0.91 ETH'
                 download='#'
               />
-            </SimpleGrid>
-            <Text
-              mt='45px'
-              mb='36px'
-              color={textColor}
-              fontSize='2xl'
-              ms='24px'
-              fontWeight='700'>
-              Recently Added
-            </Text>
-            <SimpleGrid
-              columns={{ base: 1, md: 3 }}
-              gap='20px'
-              mb={{ base: "20px", xl: "0px" }}>
               <NFT
                 name='Swipe Circles'
                 author='By Peter Will'
