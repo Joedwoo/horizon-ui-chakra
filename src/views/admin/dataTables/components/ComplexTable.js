@@ -218,53 +218,53 @@ export default function ComplexTable(props) {
       ),
       cell: (info) => (
         <Flex justify="center" align="center">
-          <HStack spacing="3">
+          <HStack spacing="4">
             <Tooltip label="Éditer le patient" hasArrow>
               <Box
                 as="button"
-                w="44px"
-                h="44px"
-                borderRadius="12px"
-                bg="linear-gradient(135deg, #4299E1 0%, #3182CE 100%)"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color="white"
                 onClick={() => handleEdit(info.row.original)}
                 _hover={{ 
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(66, 153, 225, 0.3)'
+                  transform: 'scale(1.1)',
+                  filter: 'brightness(1.1)'
                 }}
-                _active={{ transform: 'translateY(0px)' }}
+                _active={{ transform: 'scale(0.95)' }}
                 transition="all 0.2s"
-                boxShadow="0 4px 12px rgba(66, 153, 225, 0.15)"
                 cursor="pointer"
               >
-                <MdOutlineEdit size="22px" />
+                <MdOutlineEdit 
+                  size="24px" 
+                  style={{
+                    background: 'linear-gradient(135deg, #4299E1 0%, #3182CE 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    filter: 'drop-shadow(0 2px 4px rgba(66, 153, 225, 0.3))'
+                  }}
+                />
               </Box>
             </Tooltip>
             <Tooltip label="Supprimer le patient" hasArrow>
               <Box
                 as="button"
-                w="44px"
-                h="44px"
-                borderRadius="12px"
-                bg="linear-gradient(135deg, #F56565 0%, #E53E3E 100%)"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color="white"
                 onClick={() => handleDelete(info.row.index)}
                 _hover={{ 
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(245, 101, 101, 0.3)'
+                  transform: 'scale(1.1)',
+                  filter: 'brightness(1.1)'
                 }}
-                _active={{ transform: 'translateY(0px)' }}
+                _active={{ transform: 'scale(0.95)' }}
                 transition="all 0.2s"
-                boxShadow="0 4px 12px rgba(245, 101, 101, 0.15)"
                 cursor="pointer"
               >
-                <MdOutlineDelete size="22px" />
+                <MdOutlineDelete 
+                  size="24px" 
+                  style={{
+                    background: 'linear-gradient(135deg, #F56565 0%, #E53E3E 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    filter: 'drop-shadow(0 2px 4px rgba(245, 101, 101, 0.3))'
+                  }}
+                />
               </Box>
             </Tooltip>
           </HStack>
