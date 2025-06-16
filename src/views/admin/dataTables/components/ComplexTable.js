@@ -16,11 +16,6 @@ import {
   HStack,
   IconButton,
   Tooltip,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  Select,
-  Button,
 } from '@chakra-ui/react';
 import {
   createColumnHelper,
@@ -33,9 +28,10 @@ import {
 // Custom components
 import Card from 'components/card/Card';
 import CreatePatientModal from './CreatePatientModal';
+import { SearchBar } from 'components/navbar/searchBar/SearchBar';
 import * as React from 'react';
 // Assets - Utilisation des icônes conformes à l'app avec tailles plus grandes
-import { MdOutlineEdit, MdOutlineDelete, MdSearch, MdSort } from 'react-icons/md';
+import { MdOutlineEdit, MdOutlineDelete } from 'react-icons/md';
 
 const columnHelper = createColumnHelper();
 
@@ -300,40 +296,15 @@ export default function ComplexTable(props) {
         <CreatePatientModal onPatientCreate={handlePatientCreate} />
       </Flex>
 
-      {/* Barre de recherche et filtres */}
-      <Flex px="25px" py="15px" gap="4" align="center" borderBottom="1px solid" borderColor={borderColor}>
-        <InputGroup maxW="300px">
-          <InputLeftElement pointerEvents="none">
-            <MdSearch size="20px" color="gray.400" />
-          </InputLeftElement>
-          <Input
-            placeholder="Rechercher un patient..."
-            value={globalFilter ?? ''}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            variant="filled"
-            bg={useColorModeValue('gray.50', 'whiteAlpha.50')}
-            border="none"
-            _focus={{
-              bg: useColorModeValue('white', 'whiteAlpha.100'),
-              boxShadow: '0 0 0 1px ' + brandColor,
-            }}
-          />
-        </InputGroup>
-        
-        <Select maxW="200px" variant="filled" bg={useColorModeValue('gray.50', 'whiteAlpha.50')}>
-          <option value="">Tous les patients</option>
-          <option value="recent">Créés récemment</option>
-          <option value="older">Plus anciens</option>
-        </Select>
-
-        <Button
-          leftIcon={<MdSort size="18px" />}
-          variant="ghost"
-          size="sm"
-          onClick={() => setSorting([])}
-        >
-          Réinitialiser
-        </Button>
+      {/* Barre de recherche - Identique à celle du header */}
+      <Flex px="25px" py="15px" align="center" borderBottom="1px solid" borderColor={borderColor}>
+        <SearchBar
+          placeholder="Rechercher un patient..."
+          value={globalFilter ?? ''}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          w={{ base: "100%", md: "300px" }}
+          borderRadius="30px"
+        />
       </Flex>
 
       {/* Tableau */}
@@ -437,12 +408,9 @@ export default function ComplexTable(props) {
             Affichage de {table.getRowModel().rows.length} patient{table.getRowModel().rows.length > 1 ? 's' : ''}
           </Text>
           <HStack spacing="2">
-            <Button size="sm" variant="ghost" isDisabled>
-              Précédent
-            </Button>
-            <Button size="sm" variant="ghost" isDisabled>
-              Suivant
-            </Button>
+            <Text color={textColorSecondary} fontSize="xs">
+              Total : {data.length} patient{data.length > 1 ? 's' : ''}
+            </Text>
           </HStack>
         </Flex>
       )}
