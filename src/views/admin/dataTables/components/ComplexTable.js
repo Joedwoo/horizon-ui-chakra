@@ -69,13 +69,6 @@ export default function ComplexTable(props) {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
 
-  // Fonction pour générer une couleur d'avatar basée sur le nom
-  const getAvatarColor = (name) => {
-    const colors = ['brand.500', 'blue.500', 'green.500', 'purple.500', 'orange.500', 'pink.500'];
-    const index = name.length % colors.length;
-    return colors[index];
-  };
-
   const columns = [
     columnHelper.accessor('firstName', {
       id: 'patient',
@@ -99,14 +92,22 @@ export default function ComplexTable(props) {
         
         return (
           <Flex align="center" py="2" justify="flex-start">
-            <Avatar
-              size="sm"
-              name={fullName}
-              bg={getAvatarColor(fullName)}
+            <Box
+              w="40px"
+              h="40px"
+              borderRadius="50%"
+              bg="linear-gradient(135deg, #868CFF 0%, #4318FF 100%)"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              me="12px"
               color="white"
               fontWeight="bold"
-              me="12px"
-            />
+              fontSize="sm"
+              boxShadow="0 4px 12px rgba(67, 24, 255, 0.15)"
+            >
+              {getInitials(firstName, lastName)}
+            </Box>
             <Box>
               <Text color={textColor} fontSize="sm" fontWeight="700">
                 {fullName}
@@ -219,36 +220,52 @@ export default function ComplexTable(props) {
         <Flex justify="center" align="center">
           <HStack spacing="3">
             <Tooltip label="Éditer le patient" hasArrow>
-              <IconButton
-                aria-label="Éditer"
-                icon={<MdOutlineEdit size="22px" />}
-                size="md"
-                variant="ghost"
-                colorScheme="blue"
+              <Box
+                as="button"
+                w="44px"
+                h="44px"
+                borderRadius="12px"
+                bg="linear-gradient(135deg, #4299E1 0%, #3182CE 100%)"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                color="white"
                 onClick={() => handleEdit(info.row.original)}
-                _hover={{ bg: 'blue.50', transform: 'scale(1.05)' }}
-                _active={{ transform: 'scale(0.95)' }}
-                borderRadius="10px"
+                _hover={{ 
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 25px rgba(66, 153, 225, 0.3)'
+                }}
+                _active={{ transform: 'translateY(0px)' }}
                 transition="all 0.2s"
-                w="40px"
-                h="40px"
-              />
+                boxShadow="0 4px 12px rgba(66, 153, 225, 0.15)"
+                cursor="pointer"
+              >
+                <MdOutlineEdit size="22px" />
+              </Box>
             </Tooltip>
             <Tooltip label="Supprimer le patient" hasArrow>
-              <IconButton
-                aria-label="Supprimer"
-                icon={<MdOutlineDelete size="22px" />}
-                size="md"
-                variant="ghost"
-                colorScheme="red"
+              <Box
+                as="button"
+                w="44px"
+                h="44px"
+                borderRadius="12px"
+                bg="linear-gradient(135deg, #F56565 0%, #E53E3E 100%)"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                color="white"
                 onClick={() => handleDelete(info.row.index)}
-                _hover={{ bg: 'red.50', transform: 'scale(1.05)' }}
-                _active={{ transform: 'scale(0.95)' }}
-                borderRadius="10px"
+                _hover={{ 
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 25px rgba(245, 101, 101, 0.3)'
+                }}
+                _active={{ transform: 'translateY(0px)' }}
                 transition="all 0.2s"
-                w="40px"
-                h="40px"
-              />
+                boxShadow="0 4px 12px rgba(245, 101, 101, 0.15)"
+                cursor="pointer"
+              >
+                <MdOutlineDelete size="22px" />
+              </Box>
             </Tooltip>
           </HStack>
         </Flex>
