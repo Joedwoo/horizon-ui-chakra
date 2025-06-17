@@ -16,7 +16,7 @@ export const storageService = {
       const keepFile = new Blob([''], { type: 'text/plain' });
       const fileName = `${userId}/.keep`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(fileName, keepFile, {
           cacheControl: '3600',
@@ -49,7 +49,7 @@ export const storageService = {
       const keepFile = new Blob([''], { type: 'text/plain' });
       const fileName = `${userId}/patients/${patientId}_${cleanPatientName}/.keep`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(fileName, keepFile, {
           cacheControl: '3600',
@@ -282,7 +282,7 @@ export const storageService = {
         ? `${userId}/${folder}/${fileName}`
         : `${userId}/${fileName}`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .remove([filePath]);
 
@@ -290,7 +290,7 @@ export const storageService = {
         throw error;
       }
 
-      return { success: true, data };
+      return { success: true };
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
       throw error;
@@ -321,7 +321,7 @@ export const storageService = {
       const keepFile = new Blob([''], { type: 'text/plain' });
       const fileName = `${userId}/${folderName}/.keep`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(fileName, keepFile, {
           cacheControl: '3600',

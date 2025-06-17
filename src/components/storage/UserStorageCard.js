@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Button,
@@ -7,7 +7,6 @@ import {
   Progress,
   Text,
   useColorModeValue,
-  VStack,
   HStack,
   Badge,
   useToast,
@@ -64,7 +63,7 @@ const UserStorageCard = () => {
   const grayBg = useColorModeValue('gray.200', 'whiteAlpha.200');
 
   // Charger les statistiques et fichiers
-  const loadStorageData = async () => {
+  const loadStorageData = useCallback(async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -106,11 +105,11 @@ const UserStorageCard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, setLoading, setError, setStorageStats, setFiles]);
 
   useEffect(() => {
     loadStorageData();
-  }, [user]);
+  }, [loadStorageData]);
 
   // Upload de fichier
   const handleFileUpload = async (event) => {
