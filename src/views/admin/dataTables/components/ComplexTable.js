@@ -27,7 +27,7 @@ import CreatePatientModal from './CreatePatientModal';
 import { SearchBar } from 'components/navbar/searchBar/SearchBar';
 import * as React from 'react';
 import { MdOutlineEdit, MdOutlineDelete } from 'react-icons/md';
-import { patientService } from '../../../services/patientService';
+import { patientService } from 'services/patientService';
 
 const columnHelper = createColumnHelper();
 
@@ -47,12 +47,7 @@ export default function ComplexTable() {
     'unset'
   );
 
-  // Charger les patients au montage du composant
-  React.useEffect(() => {
-    loadPatients();
-  }, []);
-
-  const loadPatients = async () => {
+  const loadPatients = React.useCallback(async () => {
     try {
       setLoading(true);
       const patients = await patientService.getPatients();
@@ -69,7 +64,12 @@ export default function ComplexTable() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  // Charger les patients au montage du composant
+  React.useEffect(() => {
+    loadPatients();
+  }, [loadPatients]);
 
   const handlePatientCreate = async (newPatientData) => {
     try {

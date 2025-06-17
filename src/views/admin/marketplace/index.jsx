@@ -25,10 +25,7 @@ import React from "react";
 // Chakra imports
 import {
   Box,
-  Button,
   Flex,
-  Grid,
-  Link,
   Text,
   useColorModeValue,
   SimpleGrid,
@@ -36,9 +33,7 @@ import {
 
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner";
-import HistoryItem from "views/admin/marketplace/components/HistoryItem";
 import NFT from "components/card/NFT";
-import Card from "components/card/Card.js";
 
 // Assets
 import Nft1 from "assets/img/nfts/Nft1.png";
@@ -55,7 +50,6 @@ import Avatar4 from "assets/img/avatars/avatar4.png";
 export default function Marketplace() {
   // Chakra Color Mode
   const textColor = useColorModeValue("secondaryGray.900", "white");
-  const textColorBrand = useColorModeValue("brand.500", "white");
   return (
     <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
       {/* Main Fields */}
