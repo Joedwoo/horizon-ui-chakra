@@ -25,9 +25,15 @@ import navImage from 'assets/img/layout/Navbar.png';
 import { MdNotificationsNone, MdInfoOutline } from 'react-icons/md';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import routes from 'routes';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 export default function HeaderLinks(props) {
   const { secondary } = props;
   const { colorMode, toggleColorMode } = useColorMode();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -39,6 +45,24 @@ export default function HeaderLinks(props) {
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)',
   );
   const borderButton = useColorModeValue('secondaryGray.500', 'whiteAlpha.200');
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/auth/sign-in');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
+
+  // Fonction pour obtenir les initiales de l'utilisateur
+  const getUserInitials = () => {
+    if (user?.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
   return (
     <Flex
       w={{ sm: '100%', md: 'auto' }}
@@ -94,7 +118,7 @@ export default function HeaderLinks(props) {
               ms="auto"
               cursor="pointer"
             >
-              Mark all read
+              Tout marquer comme lu
             </Text>
           </Flex>
           <Flex flexDirection="column">
@@ -105,7 +129,7 @@ export default function HeaderLinks(props) {
               borderRadius="8px"
               mb="10px"
             >
-              <ItemContent info="Horizon UI Dashboard PRO" />
+              <ItemContent info="Nouveau patient ajouté" />
             </MenuItem>
             <MenuItem
               _hover={{ bg: 'none' }}
@@ -114,7 +138,7 @@ export default function HeaderLinks(props) {
               borderRadius="8px"
               mb="10px"
             >
-              <ItemContent info="Horizon Design System Free" />
+              <ItemContent info="Système mis à jour" />
             </MenuItem>
           </Flex>
         </MenuList>
@@ -146,7 +170,7 @@ export default function HeaderLinks(props) {
           <Flex flexDirection="column">
             <Link w="100%" href="https://horizon-ui.com/pro">
               <Button w="100%" h="44px" mb="10px" variant="brand">
-                Buy Horizon UI PRO
+                Découvrir Horizon UI PRO
               </Button>
             </Link>
             <Link
@@ -161,21 +185,7 @@ export default function HeaderLinks(props) {
                 bg="transparent"
                 borderColor={borderButton}
               >
-                See Documentation
-              </Button>
-            </Link>
-            <Link
-              w="100%"
-              href="https://github.com/horizon-ui/horizon-ui-chakra-ts"
-            >
-              <Button
-                w="100%"
-                h="44px"
-                variant="no-hover"
-                color={textColor}
-                bg="transparent"
-              >
-                Try Horizon Free
+                Voir la Documentation
               </Button>
             </Link>
           </Flex>
@@ -205,8 +215,8 @@ export default function HeaderLinks(props) {
           <Avatar
             _hover={{ cursor: 'pointer' }}
             color="white"
-            name="Adela Parkson"
-            bg="#11047A"
+            name={getUserInitials()}
+            bg="linear-gradient(135deg, #868CFF 0%, #4318FF 100%)"
             size="sm"
             w="40px"
             h="40px"
@@ -232,7 +242,7 @@ export default function HeaderLinks(props) {
               fontWeight="700"
               color={textColor}
             >
-              👋&nbsp; Hey, Adela
+              👋&nbsp; Bonjour, {user?.email?.split('@')[0] || 'Utilisateur'}
             </Text>
           </Flex>
           <Flex flexDirection="column" p="10px">
@@ -242,7 +252,7 @@ export default function HeaderLinks(props) {
               borderRadius="8px"
               px="14px"
             >
-              <Text fontSize="sm">Profile Settings</Text>
+              <Text fontSize="sm">Paramètres du profil</Text>
             </MenuItem>
             <MenuItem
               _hover={{ bg: 'none' }}
@@ -250,7 +260,7 @@ export default function HeaderLinks(props) {
               borderRadius="8px"
               px="14px"
             >
-              <Text fontSize="sm">Newsletter Settings</Text>
+              <Text fontSize="sm">Paramètres de notification</Text>
             </MenuItem>
             <MenuItem
               _hover={{ bg: 'none' }}
@@ -258,8 +268,9 @@ export default function HeaderLinks(props) {
               color="red.400"
               borderRadius="8px"
               px="14px"
+              onClick={handleSignOut}
             >
-              <Text fontSize="sm">Log out</Text>
+              <Text fontSize="sm">Se déconnecter</Text>
             </MenuItem>
           </Flex>
         </MenuList>

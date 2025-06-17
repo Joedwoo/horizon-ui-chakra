@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import {
   Box,
   Flex,
@@ -12,10 +10,9 @@ import {
   Tr,
   useColorModeValue,
   Badge,
-  Avatar,
   HStack,
-  IconButton,
   Tooltip,
+  useToast,
 } from '@chakra-ui/react';
 import {
   createColumnHelper,
@@ -25,43 +22,108 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-// Custom components
 import Card from 'components/card/Card';
 import CreatePatientModal from './CreatePatientModal';
 import { SearchBar } from 'components/navbar/searchBar/SearchBar';
 import * as React from 'react';
-// Assets - Utilisation des icônes conformes à l'app avec tailles plus grandes
 import { MdOutlineEdit, MdOutlineDelete } from 'react-icons/md';
+import { patientService } from '../../../services/patientService';
 
 const columnHelper = createColumnHelper();
 
-export default function ComplexTable(props) {
-  const { tableData } = props;
+export default function ComplexTable() {
   const [sorting, setSorting] = React.useState([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const [data, setData] = React.useState(() => [...tableData]);
+  const [data, setData] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const toast = useToast();
   
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = useColorModeValue('secondaryGray.600', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
-  const brandColor = useColorModeValue('brand.500', 'brand.400');
   const hoverBg = useColorModeValue('gray.50', 'whiteAlpha.50');
   const cardShadow = useColorModeValue(
     '0px 18px 40px rgba(112, 144, 176, 0.12)',
     'unset'
   );
 
-  const handlePatientCreate = (newPatient) => {
-    setData(prev => [...prev, newPatient]);
+  // Charger les patients au montage du composant
+  React.useEffect(() => {
+    loadPatients();
+  }, []);
+
+  const loadPatients = async () => {
+    try {
+      setLoading(true);
+      const patients = await patientService.getPatients();
+      setData(patients);
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les patients",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePatientCreate = async (newPatientData) => {
+    try {
+      const patient = await patientService.createPatient(newPatientData);
+      setData(prev => [patient, ...prev]);
+      
+      toast({
+        title: "Patient créé avec succès",
+        description: `${patient.first_name} ${patient.last_name} a été ajouté à la liste des patients.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de créer le patient",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
   };
 
   const handleEdit = (patient) => {
     console.log('Éditer patient:', patient);
-    // Logique d'édition à implémenter
+    // TODO: Implémenter la modal d'édition
   };
 
-  const handleDelete = (patientIndex) => {
-    setData(prev => prev.filter((_, index) => index !== patientIndex));
+  const handleDelete = async (patient) => {
+    try {
+      await patientService.deletePatient(patient.id);
+      setData(prev => prev.filter(p => p.id !== patient.id));
+      
+      toast({
+        title: "Patient supprimé",
+        description: `${patient.first_name} ${patient.last_name} a été supprimé.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de supprimer le patient",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
   };
 
   // Fonction pour générer des initiales
@@ -69,8 +131,26 @@ export default function ComplexTable(props) {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
 
+  // Fonction pour formater la date
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('fr-FR');
+  };
+
+  // Fonction pour calculer l'âge
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      return age - 1;
+    }
+    return age;
+  };
+
   const columns = [
-    columnHelper.accessor('firstName', {
+    columnHelper.accessor('first_name', {
       id: 'patient',
       header: () => (
         <Text
@@ -87,7 +167,7 @@ export default function ComplexTable(props) {
       ),
       cell: (info) => {
         const firstName = info.getValue();
-        const lastName = info.row.original.lastName;
+        const lastName = info.row.original.last_name;
         const fullName = `${firstName} ${lastName}`;
         
         return (
@@ -120,7 +200,7 @@ export default function ComplexTable(props) {
         );
       },
     }),
-    columnHelper.accessor('birthDate', {
+    columnHelper.accessor('birth_date', {
       id: 'birthDate',
       header: () => (
         <Text
@@ -138,7 +218,7 @@ export default function ComplexTable(props) {
       cell: (info) => (
         <Flex direction="column" align="center" justify="center">
           <Text color={textColor} fontSize="sm" fontWeight="600" mb="1">
-            {info.getValue()}
+            {formatDate(info.getValue())}
           </Text>
           <Badge
             colorScheme="blue"
@@ -147,17 +227,12 @@ export default function ComplexTable(props) {
             borderRadius="full"
             px="2"
           >
-            {(() => {
-              const birthDate = new Date(info.getValue().split('/').reverse().join('-'));
-              const today = new Date();
-              const age = today.getFullYear() - birthDate.getFullYear();
-              return `${age} ans`;
-            })()}
+            {calculateAge(info.getValue())} ans
           </Badge>
         </Flex>
       ),
     }),
-    columnHelper.accessor('createdDate', {
+    columnHelper.accessor('created_at', {
       id: 'createdDate',
       header: () => (
         <Text
@@ -174,7 +249,7 @@ export default function ComplexTable(props) {
       ),
       cell: (info) => {
         const isRecent = () => {
-          const createdDate = new Date(info.getValue().split('/').reverse().join('-'));
+          const createdDate = new Date(info.getValue());
           const today = new Date();
           const diffTime = Math.abs(today - createdDate);
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -184,7 +259,7 @@ export default function ComplexTable(props) {
         return (
           <Flex direction="column" align="center" justify="center">
             <Text color={textColor} fontSize="sm" fontWeight="600" mb="1">
-              {info.getValue()}
+              {formatDate(info.getValue())}
             </Text>
             {isRecent() && (
               <Badge
@@ -246,7 +321,7 @@ export default function ComplexTable(props) {
             <Tooltip label="Supprimer le patient" hasArrow>
               <Box
                 as="button"
-                onClick={() => handleDelete(info.row.index)}
+                onClick={() => handleDelete(info.row.original)}
                 _hover={{ 
                   transform: 'scale(1.1)',
                   filter: 'brightness(1.1)'
@@ -288,6 +363,22 @@ export default function ComplexTable(props) {
     debugTable: true,
   });
 
+  if (loading) {
+    return (
+      <Card
+        flexDirection="column"
+        w="100%"
+        px="0px"
+        overflowX={{ sm: 'scroll', lg: 'hidden' }}
+        boxShadow={cardShadow}
+      >
+        <Flex px="25px" py="20px" justifyContent="center" align="center">
+          <Text color={textColorSecondary}>Chargement des patients...</Text>
+        </Flex>
+      </Card>
+    );
+  }
+
   return (
     <Card
       flexDirection="column"
@@ -315,7 +406,7 @@ export default function ComplexTable(props) {
         <CreatePatientModal onPatientCreate={handlePatientCreate} />
       </Flex>
 
-      {/* Barre de recherche - Identique à celle du header */}
+      {/* Barre de recherche */}
       <Flex px="25px" py="15px" align="center" borderBottom="1px solid" borderColor={borderColor}>
         <SearchBar
           placeholder="Rechercher un patient..."
@@ -423,7 +514,7 @@ export default function ComplexTable(props) {
         )}
       </Box>
 
-      {/* Footer avec pagination (optionnel) */}
+      {/* Footer avec pagination */}
       {data.length > 0 && (
         <Flex px="25px" py="15px" justify="space-between" align="center" borderTop="1px solid" borderColor={borderColor}>
           <Text color={textColorSecondary} fontSize="sm">

@@ -18,8 +18,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
-import CardHorizon from "components/card/CardHorizon";
-// Utilisation des icônes conformes à l'app Horizon UI avec tailles plus grandes
 import { MdAdd, MdPerson } from "react-icons/md";
 
 const CreatePatientModal = ({ onPatientCreate }) => {
@@ -30,6 +28,7 @@ const CreatePatientModal = ({ onPatientCreate }) => {
     lastName: "",
     birthDate: "",
   });
+  const [loading, setLoading] = React.useState(false);
 
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const brandColor = useColorModeValue("brand.500", "brand.400");
@@ -44,34 +43,35 @@ const CreatePatientModal = ({ onPatientCreate }) => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (formData.firstName && formData.lastName && formData.birthDate) {
-      const newPatient = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        birthDate: new Date(formData.birthDate).toLocaleDateString('fr-FR'),
-        createdDate: new Date().toLocaleDateString('fr-FR')
-      };
-      
-      onPatientCreate(newPatient);
-      
-      // Afficher un toast de succès
-      toast({
-        title: "Patient créé avec succès",
-        description: `${formData.firstName} ${formData.lastName} a été ajouté à la liste des patients.`,
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-      });
-      
-      // Réinitialiser le formulaire
-      setFormData({
-        firstName: "",
-        lastName: "",
-        birthDate: "",
-      });
-      onClose();
+      setLoading(true);
+      try {
+        await onPatientCreate({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          birthDate: formData.birthDate
+        });
+        
+        // Réinitialiser le formulaire
+        setFormData({
+          firstName: "",
+          lastName: "",
+          birthDate: "",
+        });
+        onClose();
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de créer le patient",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+      } finally {
+        setLoading(false);
+      }
     } else {
       toast({
         title: "Erreur de validation",
@@ -281,6 +281,8 @@ const CreatePatientModal = ({ onPatientCreate }) => {
                 </Button>
                 <Button
                   onClick={handleSubmit}
+                  isLoading={loading}
+                  loadingText="Création..."
                   bg={brandColor}
                   color="white"
                   _hover={{ bg: "brand.600" }}

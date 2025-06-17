@@ -26,19 +26,21 @@ import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 
-function SignIn() {
+function SignUp() {
   const navigate = useNavigate();
   const toast = useToast();
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
   
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false,
+    confirmPassword: "",
+    acceptTerms: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Chakra color mode
   const textColor = useColorModeValue("navy.700", "white");
@@ -46,18 +48,6 @@ function SignIn() {
   const textColorDetails = useColorModeValue("navy.700", "secondaryGray.600");
   const textColorBrand = useColorModeValue("brand.500", "white");
   const brandStars = useColorModeValue("brand.500", "brand.400");
-  const googleBg = useColorModeValue("secondaryGray.300", "whiteAlpha.200");
-  const googleText = useColorModeValue("navy.700", "white");
-  const googleHover = useColorModeValue(
-    { bg: "gray.200" },
-    { bg: "whiteAlpha.300" }
-  );
-  const googleActive = useColorModeValue(
-    { bg: "secondaryGray.300" },
-    { bg: "whiteAlpha.200" }
-  );
-
-  const handleClick = () => setShow(!show);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -68,13 +58,42 @@ function SignIn() {
     setError(""); // Clear error when user types
   };
 
+  const validateForm = () => {
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
+      setError("Tous les champs sont obligatoires");
+      return false;
+    }
+
+    if (formData.password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères");
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      return false;
+    }
+
+    if (!formData.acceptTerms) {
+      setError("Vous devez accepter les conditions d'utilisation");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const { data, error } = await signIn(formData.email, formData.password);
+      const { data, error } = await signUp(formData.email, formData.password);
       
       if (error) {
         setError(error.message);
@@ -83,14 +102,14 @@ function SignIn() {
 
       if (data.user) {
         toast({
-          title: "Connexion réussie",
-          description: "Bienvenue dans votre espace patient !",
+          title: "Inscription réussie",
+          description: "Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.",
           status: "success",
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
           position: "top-right",
         });
-        navigate("/admin/data-tables");
+        navigate("/auth/sign-in");
       }
     } catch (err) {
       setError("Une erreur inattendue s'est produite");
@@ -115,7 +134,7 @@ function SignIn() {
         flexDirection='column'>
         <Box me='auto'>
           <Heading color={textColor} fontSize='36px' mb='10px'>
-            Connexion
+            Inscription
           </Heading>
           <Text
             mb='36px'
@@ -123,7 +142,7 @@ function SignIn() {
             color={textColorSecondary}
             fontWeight='400'
             fontSize='md'>
-            Entrez votre email et mot de passe pour vous connecter !
+            Créez votre compte pour commencer !
           </Text>
         </Box>
         <Flex
@@ -162,13 +181,13 @@ function SignIn() {
                 isRequired={true}
                 variant='auth'
                 fontSize='sm'
-                ms={{ base: "0px", md: "0px" }}
                 type='email'
                 placeholder='votre@email.com'
                 mb='24px'
                 fontWeight='500'
                 size='lg'
               />
+              
               <FormLabel
                 ms='4px'
                 fontSize='sm'
@@ -195,41 +214,72 @@ function SignIn() {
                     color={textColorSecondary}
                     _hover={{ cursor: "pointer" }}
                     as={show ? RiEyeCloseLine : MdOutlineRemoveRedEye}
-                    onClick={handleClick}
+                    onClick={() => setShow(!show)}
                   />
                 </InputRightElement>
               </InputGroup>
-              <Flex justifyContent='space-between' align='center' mb='24px'>
-                <FormControl display='flex' alignItems='center'>
-                  <Checkbox
-                    name="rememberMe"
-                    isChecked={formData.rememberMe}
-                    onChange={handleInputChange}
-                    id='remember-login'
-                    colorScheme='brandScheme'
-                    me='10px'
+
+              <FormLabel
+                ms='4px'
+                fontSize='sm'
+                fontWeight='500'
+                color={textColor}
+                display='flex'>
+                Confirmer le mot de passe<Text color={brandStars}>*</Text>
+              </FormLabel>
+              <InputGroup size='md'>
+                <Input
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  isRequired={true}
+                  fontSize='sm'
+                  placeholder='Confirmez votre mot de passe'
+                  mb='24px'
+                  size='lg'
+                  type={showConfirm ? "text" : "password"}
+                  variant='auth'
+                />
+                <InputRightElement display='flex' alignItems='center' mt='4px'>
+                  <Icon
+                    color={textColorSecondary}
+                    _hover={{ cursor: "pointer" }}
+                    as={showConfirm ? RiEyeCloseLine : MdOutlineRemoveRedEye}
+                    onClick={() => setShowConfirm(!showConfirm)}
                   />
-                  <FormLabel
-                    htmlFor='remember-login'
-                    mb='0'
-                    fontWeight='normal'
-                    color={textColor}
-                    fontSize='sm'>
-                    Se souvenir de moi
-                  </FormLabel>
-                </FormControl>
-              </Flex>
+                </InputRightElement>
+              </InputGroup>
+
+              <FormControl display='flex' alignItems='center' mb='24px'>
+                <Checkbox
+                  name="acceptTerms"
+                  isChecked={formData.acceptTerms}
+                  onChange={handleInputChange}
+                  id='accept-terms'
+                  colorScheme='brandScheme'
+                  me='10px'
+                />
+                <FormLabel
+                  htmlFor='accept-terms'
+                  mb='0'
+                  fontWeight='normal'
+                  color={textColor}
+                  fontSize='sm'>
+                  J'accepte les conditions d'utilisation
+                </FormLabel>
+              </FormControl>
+
               <Button
                 type="submit"
                 isLoading={loading}
-                loadingText="Connexion..."
+                loadingText="Création du compte..."
                 fontSize='sm'
                 variant='brand'
                 fontWeight='500'
                 w='100%'
                 h='50'
                 mb='24px'>
-                Se connecter
+                Créer mon compte
               </Button>
             </FormControl>
           </form>
@@ -240,14 +290,14 @@ function SignIn() {
             maxW='100%'
             mt='0px'>
             <Text color={textColorDetails} fontWeight='400' fontSize='14px'>
-              Pas encore inscrit ?
-              <NavLink to='/auth/sign-up'>
+              Déjà inscrit ?
+              <NavLink to='/auth/sign-in'>
                 <Text
                   color={textColorBrand}
                   as='span'
                   ms='5px'
                   fontWeight='500'>
-                  Créer un compte
+                  Se connecter
                 </Text>
               </NavLink>
             </Text>
@@ -258,4 +308,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;
