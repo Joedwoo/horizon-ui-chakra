@@ -7,16 +7,11 @@ export const storageService = {
   // Créer le dossier utilisateur lors de la première connexion/inscription
   async createUserFolder(userId) {
     try {
-      // Vérifier d'abord si Supabase est configuré
-      if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
-        throw new Error('Variables d\'environnement Supabase non configurées');
-      }
-
       // Créer un fichier .keep pour initialiser le dossier utilisateur
       const keepFile = new Blob([''], { type: 'text/plain' });
       const fileName = `${userId}/.keep`;
 
-      const { error } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(fileName, keepFile, {
           cacheControl: '3600',
@@ -31,77 +26,6 @@ export const storageService = {
       return { success: true, path: fileName };
     } catch (error) {
       console.error('Erreur lors de la création du dossier utilisateur:', error);
-      throw error;
-    }
-  },
-
-  // Créer un dossier pour un patient spécifique
-  async createPatientFolder(userId, patientId, patientName) {
-    try {
-      // Vérifier d'abord si Supabase est configuré
-      if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
-        console.warn('Variables d\'environnement Supabase non configurées - stockage désactivé');
-        return { success: false, error: 'Configuration manquante' };
-      }
-
-      // Nettoyer le nom du patient pour le nom de dossier
-      const cleanPatientName = patientName.replace(/[^a-zA-Z0-9_-]/g, '_');
-      const keepFile = new Blob([''], { type: 'text/plain' });
-      const fileName = `${userId}/patients/${patientId}_${cleanPatientName}/.keep`;
-
-      const { error } = await supabase.storage
-        .from(this.BUCKET_NAME)
-        .upload(fileName, keepFile, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error && !error.message.includes('already exists')) {
-        throw error;
-      }
-
-      console.log(`Dossier patient créé: ${fileName}`);
-      return { success: true, path: fileName };
-    } catch (error) {
-      console.error('Erreur lors de la création du dossier patient:', error);
-      throw error;
-    }
-  },
-
-  // Supprimer le dossier d'un patient
-  async deletePatientFolder(userId, patientId) {
-    try {
-      // Lister tous les fichiers du patient
-      const { data: files, error: listError } = await supabase.storage
-        .from(this.BUCKET_NAME)
-        .list(`${userId}/patients`, {
-          search: patientId
-        });
-
-      if (listError) {
-        throw listError;
-      }
-
-      // Supprimer tous les fichiers du patient
-      if (files && files.length > 0) {
-        const filesToDelete = files
-          .filter(file => file.name.startsWith(patientId))
-          .map(file => `${userId}/patients/${file.name}`);
-
-        if (filesToDelete.length > 0) {
-          const { error: deleteError } = await supabase.storage
-            .from(this.BUCKET_NAME)
-            .remove(filesToDelete);
-
-          if (deleteError) {
-            throw deleteError;
-          }
-        }
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Erreur lors de la suppression du dossier patient:', error);
       throw error;
     }
   },
@@ -129,12 +53,6 @@ export const storageService = {
   // Initialiser le stockage utilisateur (appelé lors de la connexion/inscription)
   async initializeUserStorage(userId) {
     try {
-      // Vérifier d'abord si Supabase est configuré
-      if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
-        console.warn('Variables d\'environnement Supabase non configurées - stockage désactivé');
-        return { success: false, error: 'Configuration manquante' };
-      }
-
       const folderExists = await this.checkUserFolder(userId);
       
       if (!folderExists) {
@@ -147,53 +65,11 @@ export const storageService = {
       return { success: true, userId };
     } catch (error) {
       console.error('Erreur lors de l\'initialisation du stockage:', error);
-      // Ne pas faire échouer l'authentification si le stockage ne fonctionne pas
-      return { success: false, error: error.message };
-    }
-  },
-
-  // Uploader un fichier dans le dossier d'un patient
-  async uploadFileToPatient(userId, patientId, file, fileName) {
-    try {
-      // Trouver le dossier du patient
-      const { data: folders, error: listError } = await supabase.storage
-        .from(this.BUCKET_NAME)
-        .list(`${userId}/patients`, {
-          search: patientId
-        });
-
-      if (listError) {
-        throw listError;
-      }
-
-      // Trouver le bon dossier patient
-      const patientFolder = folders?.find(folder => folder.name.startsWith(patientId));
-      
-      if (!patientFolder) {
-        throw new Error('Dossier patient non trouvé');
-      }
-
-      const filePath = `${userId}/patients/${patientFolder.name}/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from(this.BUCKET_NAME)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      return { success: true, path: filePath, data };
-    } catch (error) {
-      console.error('Erreur lors de l\'upload vers le patient:', error);
       throw error;
     }
   },
 
-  // Uploader un fichier dans le dossier utilisateur général
+  // Uploader un fichier dans le dossier utilisateur
   async uploadFile(userId, file, fileName, folder = '') {
     try {
       const filePath = folder 
@@ -239,42 +115,6 @@ export const storageService = {
     }
   },
 
-  // Lister les fichiers d'un patient spécifique
-  async listPatientFiles(userId, patientId) {
-    try {
-      // Trouver le dossier du patient
-      const { data: folders, error: listError } = await supabase.storage
-        .from(this.BUCKET_NAME)
-        .list(`${userId}/patients`, {
-          search: patientId
-        });
-
-      if (listError) {
-        throw listError;
-      }
-
-      const patientFolder = folders?.find(folder => folder.name.startsWith(patientId));
-      
-      if (!patientFolder) {
-        return []; // Pas de dossier = pas de fichiers
-      }
-
-      const { data, error } = await supabase.storage
-        .from(this.BUCKET_NAME)
-        .list(`${userId}/patients/${patientFolder.name}`);
-
-      if (error) {
-        throw error;
-      }
-
-      // Filtrer le fichier .keep
-      return data.filter(file => file.name !== '.keep');
-    } catch (error) {
-      console.error('Erreur lors de la récupération des fichiers du patient:', error);
-      throw error;
-    }
-  },
-
   // Supprimer un fichier
   async deleteFile(userId, fileName, folder = '') {
     try {
@@ -282,7 +122,7 @@ export const storageService = {
         ? `${userId}/${folder}/${fileName}`
         : `${userId}/${fileName}`;
 
-      const { error } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .remove([filePath]);
 
@@ -290,7 +130,7 @@ export const storageService = {
         throw error;
       }
 
-      return { success: true };
+      return { success: true, data };
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
       throw error;
@@ -321,7 +161,7 @@ export const storageService = {
       const keepFile = new Blob([''], { type: 'text/plain' });
       const fileName = `${userId}/${folderName}/.keep`;
 
-      const { error } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(fileName, keepFile, {
           cacheControl: '3600',

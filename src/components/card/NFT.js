@@ -19,6 +19,7 @@ export default function NFT(props) {
   const { image, name, author, download, status = "success" } = props;
   const [like, setLike] = useState(false);
   const textColor = useColorModeValue("navy.700", "white");
+  const textColorBid = useColorModeValue("brand.500", "white");
 
   // Configuration des statuts avec seulement Vérifié et Erreur
   const statusConfig = {

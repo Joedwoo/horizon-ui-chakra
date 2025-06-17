@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -7,6 +7,7 @@ import {
   Progress,
   Text,
   useColorModeValue,
+  VStack,
   HStack,
   Badge,
   useToast,
@@ -22,8 +23,6 @@ import {
   ListItem,
   IconButton,
   Tooltip,
-  Alert,
-  AlertIcon,
 } from '@chakra-ui/react';
 import Card from 'components/card/Card';
 import { useAuth } from '../../contexts/AuthContext';
@@ -34,8 +33,7 @@ import {
   MdInsertDriveFile, 
   MdDelete,
   MdDownload,
-  MdAdd,
-  MdWarning
+  MdAdd
 } from 'react-icons/md';
 
 const UserStorageCard = () => {
@@ -49,41 +47,22 @@ const UserStorageCard = () => {
     totalSizeMB: '0.00'
   });
   const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Chakra Color Mode - TOUS les hooks doivent être appelés en premier
+  // Chakra Color Mode
   const textColorPrimary = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = useColorModeValue('secondaryGray.600', 'white');
   const brandColor = useColorModeValue('brand.500', 'brand.400');
   const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
-  const errorBg = useColorModeValue('red.50', 'red.900');
-  const grayBg = useColorModeValue('gray.200', 'whiteAlpha.200');
 
   // Charger les statistiques et fichiers
-  const loadStorageData = useCallback(async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+  const loadStorageData = async () => {
+    if (!user) return;
     
     setLoading(true);
-    setError(null);
-    
     try {
-      // Vérifier d'abord si les variables d'environnement sont configurées
-      if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
-        throw new Error('Variables d\'environnement Supabase non configurées');
-      }
-
-      // Vérifier si ce sont des placeholders
-      if (process.env.REACT_APP_SUPABASE_URL.includes('votre-projet-id') || 
-          process.env.REACT_APP_SUPABASE_ANON_KEY.includes('votre-vraie-cle')) {
-        throw new Error('Veuillez configurer vos vraies clés Supabase dans le fichier .env');
-      }
-
       const [stats, userFiles] = await Promise.all([
         storageService.getUserStorageStats(user.id),
         storageService.listUserFiles(user.id)
@@ -93,23 +72,21 @@ const UserStorageCard = () => {
       setFiles(userFiles);
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
-      setError(error.message);
-      
-      // Utiliser des données par défaut en cas d'erreur
-      setStorageStats({
-        fileCount: 0,
-        totalSize: 0,
-        totalSizeMB: '0.00'
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les données de stockage",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
       });
-      setFiles([]);
     } finally {
       setLoading(false);
     }
-  }, [user, setLoading, setError, setStorageStats, setFiles]);
+  };
 
   useEffect(() => {
     loadStorageData();
-  }, [loadStorageData]);
+  }, [user]);
 
   // Upload de fichier
   const handleFileUpload = async (event) => {
@@ -192,23 +169,6 @@ const UserStorageCard = () => {
   const maxStorage = 100; // 100 MB max par utilisateur
   const usedPercentage = (parseFloat(storageStats.totalSizeMB) / maxStorage) * 100;
 
-  // Affichage en cas d'erreur de configuration
-  if (error && error.includes('Variables d\'environnement')) {
-    return (
-      <Card mb={{ base: "0px", lg: "20px" }} align='center' p="20px">
-        <Alert status="warning" borderRadius="lg">
-          <AlertIcon />
-          <Box>
-            <Text fontWeight="bold" mb="2">Configuration Supabase requise</Text>
-            <Text fontSize="sm">
-              Veuillez configurer vos clés Supabase dans le fichier .env pour utiliser le stockage.
-            </Text>
-          </Box>
-        </Alert>
-      </Card>
-    );
-  }
-
   return (
     <>
       <Card mb={{ base: "0px", lg: "20px" }} align='center' p="20px">
@@ -221,137 +181,90 @@ const UserStorageCard = () => {
             variant="ghost"
             onClick={onOpen}
             leftIcon={<Icon as={MdFolder} />}
-            isDisabled={loading || !!error}
           >
             Gérer
           </Button>
         </Flex>
 
-        {loading ? (
-          <Flex
-            direction="column"
-            align="center"
-            justify="center"
-            bg={bgColor}
-            borderRadius="xl"
-            p="40px"
-            w="100%"
-          >
-            <Text color={textColorSecondary} mb="10px">Chargement du stockage...</Text>
-            <Progress size="sm" isIndeterminate w="200px" colorScheme="brand" />
-          </Flex>
-        ) : error ? (
-          <Flex
-            direction="column"
-            align="center"
-            justify="center"
-            bg={errorBg}
-            borderRadius="xl"
-            p="20px"
-            w="100%"
-            mb="20px"
-          >
-            <Icon as={MdWarning} color="red.500" h='30px' w='30px' mb="10px" />
-            <Text color="red.500" fontWeight='bold' fontSize='sm' textAlign="center">
-              Erreur de connexion au stockage
-            </Text>
-            <Text color="red.400" fontSize='xs' textAlign="center" mt="5px">
-              {error}
-            </Text>
-            <Button
-              size="sm"
-              variant="outline"
-              colorScheme="red"
-              mt="10px"
-              onClick={loadStorageData}
-            >
-              Réessayer
-            </Button>
-          </Flex>
-        ) : (
-          <>
-            <Flex
-              direction="column"
-              align="center"
-              justify="center"
-              bg={bgColor}
-              borderRadius="xl"
-              p="20px"
-              w="100%"
-              mb="20px"
-            >
-              <Icon as={MdCloudUpload} color={brandColor} h='40px' w='40px' mb="10px" />
-              <Text color={textColorPrimary} fontWeight='bold' fontSize='lg' mb="5px">
-                Espace de stockage
-              </Text>
-              <Text color={textColorSecondary} fontSize='sm' textAlign="center" mb="15px">
-                Gérez vos fichiers personnels en toute sécurité
-              </Text>
-              
-              <HStack spacing="4" mb="15px">
-                <Badge colorScheme="blue" variant="subtle">
-                  {storageStats.fileCount} fichier{storageStats.fileCount > 1 ? 's' : ''}
-                </Badge>
-                <Badge colorScheme="green" variant="subtle">
-                  {storageStats.totalSizeMB} MB utilisés
-                </Badge>
-              </HStack>
-            </Flex>
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          bg={bgColor}
+          borderRadius="xl"
+          p="20px"
+          w="100%"
+          mb="20px"
+        >
+          <Icon as={MdCloudUpload} color={brandColor} h='40px' w='40px' mb="10px" />
+          <Text color={textColorPrimary} fontWeight='bold' fontSize='lg' mb="5px">
+            Espace de stockage
+          </Text>
+          <Text color={textColorSecondary} fontSize='sm' textAlign="center" mb="15px">
+            Gérez vos fichiers personnels en toute sécurité
+          </Text>
+          
+          <HStack spacing="4" mb="15px">
+            <Badge colorScheme="blue" variant="subtle">
+              {storageStats.fileCount} fichier{storageStats.fileCount > 1 ? 's' : ''}
+            </Badge>
+            <Badge colorScheme="green" variant="subtle">
+              {storageStats.totalSizeMB} MB utilisés
+            </Badge>
+          </HStack>
+        </Flex>
 
-            <Box w='100%'>
-              <Flex w='100%' justify='space-between' mb='10px'>
-                <Text color={textColorSecondary} fontSize='sm'>
-                  {storageStats.totalSizeMB} MB
-                </Text>
-                <Text color={textColorSecondary} fontSize='sm'>
-                  {maxStorage} MB
-                </Text>
-              </Flex>
-              <Progress
-                value={usedPercentage}
-                colorScheme={usedPercentage > 80 ? 'red' : usedPercentage > 60 ? 'orange' : 'brand'}
-                size="lg"
-                borderRadius="full"
-                bg={grayBg}
-              />
-              <Text 
-                color={textColorSecondary} 
-                fontSize='xs' 
-                textAlign="center" 
-                mt="5px"
-              >
-                {usedPercentage.toFixed(1)}% utilisé
-              </Text>
-            </Box>
+        <Box w='100%'>
+          <Flex w='100%' justify='space-between' mb='10px'>
+            <Text color={textColorSecondary} fontSize='sm'>
+              {storageStats.totalSizeMB} MB
+            </Text>
+            <Text color={textColorSecondary} fontSize='sm'>
+              {maxStorage} MB
+            </Text>
+          </Flex>
+          <Progress
+            value={usedPercentage}
+            colorScheme={usedPercentage > 80 ? 'red' : usedPercentage > 60 ? 'orange' : 'brand'}
+            size="lg"
+            borderRadius="full"
+            bg={useColorModeValue('gray.200', 'whiteAlpha.200')}
+          />
+          <Text 
+            color={textColorSecondary} 
+            fontSize='xs' 
+            textAlign="center" 
+            mt="5px"
+          >
+            {usedPercentage.toFixed(1)}% utilisé
+          </Text>
+        </Box>
 
-            {/* Upload rapide */}
-            <Box w="100%" mt="20px">
-              <Input
-                type="file"
-                onChange={handleFileUpload}
-                display="none"
-                id="file-upload"
-                accept="*/*"
-              />
-              <Button
-                as="label"
-                htmlFor="file-upload"
-                w="100%"
-                variant="outline"
-                borderColor={brandColor}
-                color={brandColor}
-                _hover={{ bg: `${brandColor}15` }}
-                leftIcon={<Icon as={MdAdd} />}
-                isLoading={uploading}
-                loadingText="Upload..."
-                cursor="pointer"
-                isDisabled={!!error}
-              >
-                Ajouter un fichier
-              </Button>
-            </Box>
-          </>
-        )}
+        {/* Upload rapide */}
+        <Box w="100%" mt="20px">
+          <Input
+            type="file"
+            onChange={handleFileUpload}
+            display="none"
+            id="file-upload"
+            accept="*/*"
+          />
+          <Button
+            as="label"
+            htmlFor="file-upload"
+            w="100%"
+            variant="outline"
+            borderColor={brandColor}
+            color={brandColor}
+            _hover={{ bg: `${brandColor}15` }}
+            leftIcon={<Icon as={MdAdd} />}
+            isLoading={uploading}
+            loadingText="Upload..."
+            cursor="pointer"
+          >
+            Ajouter un fichier
+          </Button>
+        </Box>
       </Card>
 
       {/* Modal de gestion des fichiers */}
@@ -370,14 +283,6 @@ const UserStorageCard = () => {
               <Flex justify="center" py="40px">
                 <Text color={textColorSecondary}>Chargement...</Text>
               </Flex>
-            ) : error ? (
-              <Alert status="error" borderRadius="lg">
-                <AlertIcon />
-                <Box>
-                  <Text fontWeight="bold">Erreur de connexion</Text>
-                  <Text fontSize="sm">{error}</Text>
-                </Box>
-              </Alert>
             ) : files.length === 0 ? (
               <Flex 
                 direction="column" 

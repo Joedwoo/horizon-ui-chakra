@@ -17,75 +17,28 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
     // Récupérer la session actuelle
     const getSession = async () => {
-      try {
-        console.log('🔍 Vérification de la session...');
-        
-        // Vérifier si Supabase est configuré
-        if (!process.env.REACT_APP_SUPABASE_URL || 
-            !process.env.REACT_APP_SUPABASE_ANON_KEY ||
-            process.env.REACT_APP_SUPABASE_URL.includes('placeholder') ||
-            process.env.REACT_APP_SUPABASE_ANON_KEY.includes('placeholder')) {
-          console.warn('⚠️ Supabase non configuré - mode démo');
-          if (mounted) {
-            setUser(null);
-            setLoading(false);
-          }
-          return;
-        }
-
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-
-        if (error) {
-          console.error('Erreur lors de la récupération de la session:', error);
-          setUser(null);
-        } else {
-          console.log('Session récupérée:', session ? 'Utilisateur connecté' : 'Pas de session');
-          setUser(session?.user ?? null);
-          
-          // Initialiser le stockage si l'utilisateur est connecté
-          if (session?.user) {
-            try {
-              await storageService.initializeUserStorage(session.user.id);
-            } catch (error) {
-              console.warn('Stockage non disponible:', error.message);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération de la session:', error);
-        if (mounted) {
-          setUser(null);
-        }
-      } finally {
-        if (mounted) {
-          console.log('✅ Initialisation de l\'authentification terminée');
-          setLoading(false);
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      
+      // Initialiser le stockage si l'utilisateur est connecté
+      if (session?.user) {
+        try {
+          await storageService.initializeUserStorage(session.user.id);
+        } catch (error) {
+          console.error('Erreur lors de l\'initialisation du stockage:', error);
         }
       }
+      
+      setLoading(false);
     };
-
-    // Timeout de sécurité pour éviter le chargement infini
-    const timeoutId = setTimeout(() => {
-      if (mounted && loading) {
-        console.warn('⚠️ Timeout de l\'authentification - arrêt du chargement');
-        setLoading(false);
-      }
-    }, 10000); // 10 secondes maximum
 
     getSession();
 
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!mounted) return;
-
-        console.log('🔄 Changement d\'état d\'authentification:', event);
         setUser(session?.user ?? null);
         
         // Initialiser le stockage lors de la connexion ou inscription
@@ -94,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             await storageService.initializeUserStorage(session.user.id);
             console.log('Stockage utilisateur initialisé avec succès');
           } catch (error) {
-            console.warn('Erreur lors de l\'initialisation du stockage:', error.message);
+            console.error('Erreur lors de l\'initialisation du stockage:', error);
           }
         }
         
@@ -102,83 +55,30 @@ export const AuthProvider = ({ children }) => {
       }
     );
 
-    return () => {
-      mounted = false;
-      clearTimeout(timeoutId);
-      console.log('🧹 Nettoyage de l\'abonnement auth');
-      subscription?.unsubscribe();
-    };
+    return () => subscription?.unsubscribe();
   }, []);
 
   // Fonction de connexion
   const signIn = async (email, password) => {
-    console.log('🔐 Tentative de connexion pour:', email);
-    
-    // Vérifier si Supabase est configuré
-    if (!process.env.REACT_APP_SUPABASE_URL || 
-        !process.env.REACT_APP_SUPABASE_ANON_KEY ||
-        process.env.REACT_APP_SUPABASE_URL.includes('placeholder') ||
-        process.env.REACT_APP_SUPABASE_ANON_KEY.includes('placeholder')) {
-      return { 
-        data: null, 
-        error: { message: 'Supabase non configuré. Veuillez configurer vos clés dans le fichier .env' } 
-      };
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
-    if (error) {
-      console.error('Erreur de connexion:', error);
-    } else {
-      console.log('✅ Connexion réussie');
-    }
-    
     return { data, error };
   };
 
   // Fonction d'inscription
   const signUp = async (email, password) => {
-    console.log('📝 Tentative d\'inscription pour:', email);
-    
-    // Vérifier si Supabase est configuré
-    if (!process.env.REACT_APP_SUPABASE_URL || 
-        !process.env.REACT_APP_SUPABASE_ANON_KEY ||
-        process.env.REACT_APP_SUPABASE_URL.includes('placeholder') ||
-        process.env.REACT_APP_SUPABASE_ANON_KEY.includes('placeholder')) {
-      return { 
-        data: null, 
-        error: { message: 'Supabase non configuré. Veuillez configurer vos clés dans le fichier .env' } 
-      };
-    }
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
-    
-    if (error) {
-      console.error('Erreur d\'inscription:', error);
-    } else {
-      console.log('✅ Inscription réussie');
-    }
-    
     return { data, error };
   };
 
   // Fonction de déconnexion
   const signOut = async () => {
-    console.log('🚪 Déconnexion...');
     const { error } = await supabase.auth.signOut();
-    
-    if (error) {
-      console.error('Erreur de déconnexion:', error);
-    } else {
-      console.log('✅ Déconnexion réussie');
-    }
-    
     return { error };
   };
 
