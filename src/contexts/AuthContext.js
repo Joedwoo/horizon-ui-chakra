@@ -19,19 +19,23 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Récupérer la session actuelle
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      
-      // Initialiser le stockage si l'utilisateur est connecté
-      if (session?.user) {
-        try {
-          await storageService.initializeUserStorage(session.user.id);
-        } catch (error) {
-          console.error('Erreur lors de l\'initialisation du stockage:', error);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+        
+        // Initialiser le stockage si l'utilisateur est connecté
+        if (session?.user) {
+          try {
+            await storageService.initializeUserStorage(session.user.id);
+          } catch (error) {
+            console.warn('Stockage non disponible:', error.message);
+          }
         }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la session:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     getSession();
@@ -47,7 +51,7 @@ export const AuthProvider = ({ children }) => {
             await storageService.initializeUserStorage(session.user.id);
             console.log('Stockage utilisateur initialisé avec succès');
           } catch (error) {
-            console.error('Erreur lors de l\'initialisation du stockage:', error);
+            console.warn('Erreur lors de l\'initialisation du stockage:', error.message);
           }
         }
         

@@ -7,6 +7,11 @@ export const storageService = {
   // Créer le dossier utilisateur lors de la première connexion/inscription
   async createUserFolder(userId) {
     try {
+      // Vérifier d'abord si Supabase est configuré
+      if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
+        throw new Error('Variables d\'environnement Supabase non configurées');
+      }
+
       // Créer un fichier .keep pour initialiser le dossier utilisateur
       const keepFile = new Blob([''], { type: 'text/plain' });
       const fileName = `${userId}/.keep`;
@@ -53,6 +58,12 @@ export const storageService = {
   // Initialiser le stockage utilisateur (appelé lors de la connexion/inscription)
   async initializeUserStorage(userId) {
     try {
+      // Vérifier d'abord si Supabase est configuré
+      if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
+        console.warn('Variables d\'environnement Supabase non configurées - stockage désactivé');
+        return { success: false, error: 'Configuration manquante' };
+      }
+
       const folderExists = await this.checkUserFolder(userId);
       
       if (!folderExists) {
@@ -65,7 +76,8 @@ export const storageService = {
       return { success: true, userId };
     } catch (error) {
       console.error('Erreur lors de l\'initialisation du stockage:', error);
-      throw error;
+      // Ne pas faire échouer l'authentification si le stockage ne fonctionne pas
+      return { success: false, error: error.message };
     }
   },
 
