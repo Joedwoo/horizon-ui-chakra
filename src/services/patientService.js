@@ -1,4 +1,5 @@
 import { supabase, TABLES } from '../lib/supabase';
+import { storageService } from './storageService';
 
 export const patientService = {
   // Récupérer tous les patients de l'utilisateur connecté
@@ -40,6 +41,15 @@ export const patientService = {
       throw new Error(error.message);
     }
 
+    // Créer automatiquement le dossier de stockage pour ce patient
+    try {
+      await storageService.createPatientFolder(user.id, data.id, `${data.first_name}_${data.last_name}`);
+      console.log(`Dossier créé pour le patient: ${data.first_name} ${data.last_name}`);
+    } catch (storageError) {
+      console.warn('Erreur lors de la création du dossier patient:', storageError.message);
+      // Ne pas faire échouer la création du patient si le stockage ne fonctionne pas
+    }
+
     return data;
   },
 
@@ -65,6 +75,20 @@ export const patientService = {
 
   // Supprimer un patient
   async deletePatient(patientId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      throw new Error('Utilisateur non authentifié');
+    }
+
+    // Supprimer d'abord le dossier de stockage du patient
+    try {
+      await storageService.deletePatientFolder(user.id, patientId);
+      console.log(`Dossier supprimé pour le patient: ${patientId}`);
+    } catch (storageError) {
+      console.warn('Erreur lors de la suppression du dossier patient:', storageError.message);
+    }
+
     const { error } = await supabase
       .from(TABLES.PATIENTS)
       .delete()
