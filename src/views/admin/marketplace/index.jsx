@@ -84,28 +84,28 @@ export default function Marketplace() {
               name='Mesh Gradients '
               author='08 Mar 2024'
               image={Nft3}
-              status='warning'
+              status='info'
               download='#'
             />
             <NFT
               name='Swipe Circles'
               author='03 Feb 2024'
               image={Nft4}
-              status='info'
+              status='success'
               download='#'
             />
             <NFT
               name='Colorful Heaven'
               author='28 Nov 2023'
               image={Nft5}
-              status='success'
+              status='info'
               download='#'
             />
             <NFT
               name='3D Cubes Art'
               author='12 Jan 2024'
               image={Nft6}
-              status='warning'
+              status='error'
               download='#'
             />
           </SimpleGrid>

@@ -12,10 +12,9 @@ import {
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/card/Card.js";
-// Assets
 import React, { useState } from "react";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
-import { MdCheckCircle, MdError, MdWarning, MdInfo } from "react-icons/md";
+import { MdCheckCircle, MdError, MdInfo } from "react-icons/md";
 
 export default function NFT(props) {
   const { image, name, author, download, status = "success" } = props;
@@ -23,7 +22,7 @@ export default function NFT(props) {
   const textColor = useColorModeValue("navy.700", "white");
   const textColorBid = useColorModeValue("brand.500", "white");
 
-  // Configuration des statuts avec icônes et couleurs
+  // Configuration des statuts avec icônes et couleurs (sans warning/attention)
   const statusConfig = {
     success: {
       icon: MdCheckCircle,
@@ -40,14 +39,6 @@ export default function NFT(props) {
       borderColor: "red.200",
       label: "Erreur",
       colorScheme: "red"
-    },
-    warning: {
-      icon: MdWarning,
-      color: "orange.500",
-      bgColor: "orange.50",
-      borderColor: "orange.200",
-      label: "Attention",
-      colorScheme: "orange"
     },
     info: {
       icon: MdInfo,
