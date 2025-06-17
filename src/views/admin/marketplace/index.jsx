@@ -70,42 +70,42 @@ export default function Marketplace() {
               name='Abstract Colors'
               author='15 Jan 2024'
               image={Nft1}
-              currentbid='0.91 ETH'
+              status='success'
               download='#'
             />
             <NFT
               name='ETH AI Brain'
               author='22 Dec 2023'
               image={Nft2}
-              currentbid='0.91 ETH'
+              status='error'
               download='#'
             />
             <NFT
               name='Mesh Gradients '
               author='08 Mar 2024'
               image={Nft3}
-              currentbid='0.91 ETH'
+              status='warning'
               download='#'
             />
             <NFT
               name='Swipe Circles'
               author='03 Feb 2024'
               image={Nft4}
-              currentbid='0.91 ETH'
+              status='info'
               download='#'
             />
             <NFT
               name='Colorful Heaven'
               author='28 Nov 2023'
               image={Nft5}
-              currentbid='0.91 ETH'
+              status='success'
               download='#'
             />
             <NFT
               name='3D Cubes Art'
               author='12 Jan 2024'
               image={Nft6}
-              currentbid='0.91 ETH'
+              status='warning'
               download='#'
             />
           </SimpleGrid>
