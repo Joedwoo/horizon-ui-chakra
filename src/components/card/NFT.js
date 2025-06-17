@@ -8,13 +8,12 @@ import {
   Link,
   Text,
   useColorModeValue,
-  Badge,
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/card/Card.js";
 import React, { useState } from "react";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
-import { MdCheckCircle, MdError, MdInfo } from "react-icons/md";
+import { MdCheckCircle, MdError } from "react-icons/md";
 
 export default function NFT(props) {
   const { image, name, author, download, status = "success" } = props;
@@ -22,31 +21,15 @@ export default function NFT(props) {
   const textColor = useColorModeValue("navy.700", "white");
   const textColorBid = useColorModeValue("brand.500", "white");
 
-  // Configuration des statuts avec icônes et couleurs (sans warning/attention)
+  // Configuration des statuts avec seulement Vérifié et Erreur
   const statusConfig = {
     success: {
       icon: MdCheckCircle,
       color: "green.500",
-      bgColor: "green.50",
-      borderColor: "green.200",
-      label: "Vérifié",
-      colorScheme: "green"
     },
     error: {
       icon: MdError,
       color: "red.500",
-      bgColor: "red.50",
-      borderColor: "red.200",
-      label: "Erreur",
-      colorScheme: "red"
-    },
-    info: {
-      icon: MdInfo,
-      color: "blue.500",
-      bgColor: "blue.50",
-      borderColor: "blue.200",
-      label: "Info",
-      colorScheme: "blue"
     }
   };
 
@@ -136,7 +119,7 @@ export default function NFT(props) {
             }}
             mt='25px'>
             
-            {/* Badge de statut avec icône */}
+            {/* Icône de statut uniquement */}
             <Flex 
               align="center" 
               justify="center"
@@ -148,24 +131,12 @@ export default function NFT(props) {
                 "2xl": "0px",
               }}
             >
-              <Badge
-                colorScheme={currentStatus.colorScheme}
-                variant="subtle"
-                fontSize="sm"
-                borderRadius="full"
-                px="3"
-                py="1"
-                display="flex"
-                alignItems="center"
-                gap="1"
-              >
-                <Icon 
-                  as={currentStatus.icon} 
-                  w="14px" 
-                  h="14px"
-                />
-                {currentStatus.label}
-              </Badge>
+              <Icon 
+                as={currentStatus.icon} 
+                w="24px" 
+                h="24px"
+                color={currentStatus.color}
+              />
             </Flex>
 
             <Link

@@ -84,21 +84,21 @@ export default function Marketplace() {
               name='Mesh Gradients '
               author='08 Mar 2024'
               image={Nft3}
-              status='info'
+              status='success'
               download='#'
             />
             <NFT
               name='Swipe Circles'
               author='03 Feb 2024'
               image={Nft4}
-              status='success'
+              status='error'
               download='#'
             />
             <NFT
               name='Colorful Heaven'
               author='28 Nov 2023'
               image={Nft5}
-              status='info'
+              status='success'
               download='#'
             />
             <NFT
