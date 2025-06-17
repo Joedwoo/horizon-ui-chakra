@@ -28,7 +28,7 @@ import Banner from "views/admin/profile/components/Banner";
 import General from "views/admin/profile/components/General";
 import Notifications from "views/admin/profile/components/Notifications";
 import Projects from "views/admin/profile/components/Projects";
-import UserStorageCard from "components/storage/UserStorageCard";
+import Storage from "views/admin/profile/components/Storage";
 import Upload from "views/admin/profile/components/Upload";
 
 // Assets
@@ -60,8 +60,10 @@ export default function Overview() {
           followers='9.7k'
           following='274'
         />
-        <UserStorageCard
+        <Storage
           gridArea={{ base: "2 / 1 / 3 / 2", lg: "1 / 2 / 2 / 3" }}
+          used={25.6}
+          total={50}
         />
         <Upload
           gridArea={{
