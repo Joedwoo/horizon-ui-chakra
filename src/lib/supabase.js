@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
+let supabase;
+
 // Vérification des variables d'environnement
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Variables d\'environnement Supabase manquantes:');
@@ -10,7 +12,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('REACT_APP_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'Définie' : 'Non définie');
   
   // Créer un client factice pour éviter les erreurs
-  export const supabase = {
+  supabase = {
     auth: {
       getSession: () => Promise.resolve({ data: { session: null }, error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
@@ -46,7 +48,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
     console.warn('⚠️ Détection de valeurs placeholder dans la configuration Supabase');
     
     // Créer un client factice
-    export const supabase = {
+    supabase = {
       auth: {
         getSession: () => Promise.resolve({ data: { session: null }, error: null }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
@@ -72,7 +74,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
     };
   } else {
     // Configuration normale
-    export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
@@ -109,3 +111,5 @@ export const testSupabaseConnection = async () => {
     return false;
   }
 };
+
+export { supabase };

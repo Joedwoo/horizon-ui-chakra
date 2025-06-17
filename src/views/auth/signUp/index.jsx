@@ -18,11 +18,9 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import { HSeparator } from "components/separator/Separator";
 import DefaultAuth from "layouts/auth/Default";
 import { useAuth } from "../../../contexts/AuthContext";
 import illustration from "assets/img/auth/auth.png";
-import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 
