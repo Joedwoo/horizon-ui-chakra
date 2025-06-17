@@ -17,6 +17,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Récupérer la session actuelle
     const getSession = async () => {
       try {
@@ -28,13 +30,17 @@ export const AuthProvider = ({ children }) => {
             process.env.REACT_APP_SUPABASE_URL.includes('placeholder') ||
             process.env.REACT_APP_SUPABASE_ANON_KEY.includes('placeholder')) {
           console.warn('⚠️ Supabase non configuré - mode démo');
-          setUser(null);
-          setLoading(false);
+          if (mounted) {
+            setUser(null);
+            setLoading(false);
+          }
           return;
         }
 
         const { data: { session }, error } = await supabase.auth.getSession();
         
+        if (!mounted) return;
+
         if (error) {
           console.error('Erreur lors de la récupération de la session:', error);
           setUser(null);
@@ -53,18 +59,32 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Erreur lors de la récupération de la session:', error);
-        setUser(null);
+        if (mounted) {
+          setUser(null);
+        }
       } finally {
-        console.log('✅ Initialisation de l\'authentification terminée');
-        setLoading(false);
+        if (mounted) {
+          console.log('✅ Initialisation de l\'authentification terminée');
+          setLoading(false);
+        }
       }
     };
+
+    // Timeout de sécurité pour éviter le chargement infini
+    const timeoutId = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn('⚠️ Timeout de l\'authentification - arrêt du chargement');
+        setLoading(false);
+      }
+    }, 10000); // 10 secondes maximum
 
     getSession();
 
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+
         console.log('🔄 Changement d\'état d\'authentification:', event);
         setUser(session?.user ?? null);
         
@@ -83,6 +103,8 @@ export const AuthProvider = ({ children }) => {
     );
 
     return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
       console.log('🧹 Nettoyage de l\'abonnement auth');
       subscription?.unsubscribe();
     };
@@ -91,6 +113,18 @@ export const AuthProvider = ({ children }) => {
   // Fonction de connexion
   const signIn = async (email, password) => {
     console.log('🔐 Tentative de connexion pour:', email);
+    
+    // Vérifier si Supabase est configuré
+    if (!process.env.REACT_APP_SUPABASE_URL || 
+        !process.env.REACT_APP_SUPABASE_ANON_KEY ||
+        process.env.REACT_APP_SUPABASE_URL.includes('placeholder') ||
+        process.env.REACT_APP_SUPABASE_ANON_KEY.includes('placeholder')) {
+      return { 
+        data: null, 
+        error: { message: 'Supabase non configuré. Veuillez configurer vos clés dans le fichier .env' } 
+      };
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -108,6 +142,18 @@ export const AuthProvider = ({ children }) => {
   // Fonction d'inscription
   const signUp = async (email, password) => {
     console.log('📝 Tentative d\'inscription pour:', email);
+    
+    // Vérifier si Supabase est configuré
+    if (!process.env.REACT_APP_SUPABASE_URL || 
+        !process.env.REACT_APP_SUPABASE_ANON_KEY ||
+        process.env.REACT_APP_SUPABASE_URL.includes('placeholder') ||
+        process.env.REACT_APP_SUPABASE_ANON_KEY.includes('placeholder')) {
+      return { 
+        data: null, 
+        error: { message: 'Supabase non configuré. Veuillez configurer vos clés dans le fichier .env' } 
+      };
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
