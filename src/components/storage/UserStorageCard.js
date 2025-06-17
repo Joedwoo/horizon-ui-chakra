@@ -54,12 +54,14 @@ const UserStorageCard = () => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Chakra Color Mode
+  // Chakra Color Mode - TOUS les hooks doivent être appelés en premier
   const textColorPrimary = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = useColorModeValue('secondaryGray.600', 'white');
   const brandColor = useColorModeValue('brand.500', 'brand.400');
   const bgColor = useColorModeValue('gray.50', 'whiteAlpha.50');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
+  const errorBg = useColorModeValue('red.50', 'red.900');
+  const grayBg = useColorModeValue('gray.200', 'whiteAlpha.200');
 
   // Charger les statistiques et fichiers
   const loadStorageData = async () => {
@@ -244,7 +246,7 @@ const UserStorageCard = () => {
             direction="column"
             align="center"
             justify="center"
-            bg={useColorModeValue('red.50', 'red.900')}
+            bg={errorBg}
             borderRadius="xl"
             p="20px"
             w="100%"
@@ -311,7 +313,7 @@ const UserStorageCard = () => {
                 colorScheme={usedPercentage > 80 ? 'red' : usedPercentage > 60 ? 'orange' : 'brand'}
                 size="lg"
                 borderRadius="full"
-                bg={useColorModeValue('gray.200', 'whiteAlpha.200')}
+                bg={grayBg}
               />
               <Text 
                 color={textColorSecondary} 
